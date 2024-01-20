@@ -1,0 +1,48 @@
+version: '3.5'
+
+services:
+  backend:
+    container_name: starter-base-backend
+    build:
+      context: .
+      dockerfile: Dockerfile.local
+    restart: always
+    env_file:
+      - ./src/config/env/.local.env
+    volumes:
+      - ./src:/app/src
+      - ./test:/app/test
+      # - ./prisma:/app/prisma
+      - ./package.json:/app/package.json
+    ports:
+      - 80:8000
+    networks:
+      - starter-base-net
+    depends_on:
+      - mysql
+      - redis
+
+  mysql:
+    container_name: starter-base-mysql
+    image: mysql:8.0.20
+    command: mysqld --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    ports:
+      - ${MYSQL_PORT}:3306
+    networks:
+      - starter-base-net
+    platform: linux/amd64
+
+  redis:
+    container_name: starter-base-redis
+    image: redis:6-alpine
+    command: redis-server --port 6379
+    ports:
+      - ${REDIS_PORT}:6379
+    networks:
+      - starter-base-net
+
+networks:
+  starter-base-net:
