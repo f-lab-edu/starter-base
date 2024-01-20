@@ -7,7 +7,7 @@ USER nonroot
 
 WORKDIR /app
 
-COPY --chmod=666 . .
+COPY --chmod=646 . .
 RUN npm install --ignore-scripts
 # RUN npx prisma generate
 CMD ["npm", "run", "start:local"]
