@@ -1,6 +1,6 @@
 FROM node:20-alpine3.18
 WORKDIR /app
 COPY . .
-RUN npm install
+RUN npm install --ignore-scripts
 # RUN npx prisma generate
 CMD ["npm", "run", "start:local"]
