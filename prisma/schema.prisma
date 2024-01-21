@@ -22,7 +22,7 @@ model user {
   username   String    @unique @db.VarChar(12)
   email      String    @unique @db.VarChar(254)
   password   String    @db.VarChar(128)
-  role       user_role
+  role       user_role @default(USER)
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt
 }
