@@ -36,7 +36,5 @@ export class AuthController {
     // redis에 refresh token 저장
     const client: Redis = this.client.createClient()
     client.set(`${REFRESH_TOKEN_REDIS_KEY}:${user_id}`, refresh_token, 'PX', REFRESH_TOKEN_EXPIRATION_TIME)
-
-    return
   }
 }
