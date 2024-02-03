@@ -24,6 +24,7 @@ export class AuthService {
 
     // TODO: iss - 서버 배포 시 루트 도메인 사용
     return {
+      user_id: user.id,
       access_token: this.jwtService.sign({
         sub: user.id,
         iat: dayjs().unix(),
