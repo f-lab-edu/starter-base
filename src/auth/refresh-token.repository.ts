@@ -14,7 +14,7 @@ export class RefreshTokenRepository {
 
   /** key value 생성 */
   async set(key: string, value: string, ms?: number): Promise<'OK'> {
-    if (!!ms) {
+    if (ms) {
       return this.redisClient.set(key, value, 'PX', ms)
     }
     return this.redisClient.set(key, value)
