@@ -47,6 +47,7 @@ export class RefreshTokenRepository {
       keys.map(async (key) => {
         const ttl = await this.redisClient.ttl(key)
 
+        // ttl이 설정되지 않았거나(-1), 존재하지 않는 key일 경우(-2)
         if (ttl === -1 || ttl === -2) return null
         return { key, ttl }
       }),
