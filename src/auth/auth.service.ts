@@ -18,8 +18,8 @@ export class AuthService {
   ) {}
 
   /** redis에 refresh token 저장 */
-  private async storeRefreshToken(refresh_token: string, userId: number, clientId: string) {
-    this.refreshTokenRepository.set(
+  private async storeRefreshToken(refresh_token: string, userId: number, clientId: string): Promise<void> {
+    await this.refreshTokenRepository.set(
       `${REFRESH_TOKEN_REDIS_KEY}:${userId}:${clientId}`,
       refresh_token,
       REFRESH_TOKEN_EXPIRATION_TIME,
@@ -27,7 +27,7 @@ export class AuthService {
   }
 
   /** user id 당 토큰 개수를 제한할 수 있도록 최대 개수를 넘었을 때 오래된 토큰을 제거하는 함수 */
-  private async maintainTokenCount(userId: number) {
+  private async maintainTokenCount(userId: number): Promise<void> {
     const refreshTokens = await this.refreshTokenRepository.getTTLsByPattern(`${REFRESH_TOKEN_REDIS_KEY}:${userId}:*`)
 
     // ttl 기준으로 정렬
