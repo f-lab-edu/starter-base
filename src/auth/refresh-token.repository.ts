@@ -13,11 +13,8 @@ export class RefreshTokenRepository {
   }
 
   /** key value 생성 */
-  async set(key: string, value: string, ms?: number): Promise<'OK'> {
-    if (ms) {
-      return this.redisClient.set(key, value, 'PX', ms)
-    }
-    return this.redisClient.set(key, value)
+  async set(key: string, value: string, ms: number): Promise<'OK'> {
+    return this.redisClient.set(key, value, 'PX', ms)
   }
 
   /** key들에 해당하는 모든 value 삭제 */
