@@ -1,9 +1,10 @@
-import { IsEmail, IsString, IsStrongPassword, MaxLength } from 'class-validator'
+import { IsEmail, IsString, IsStrongPassword, MaxLength, MinLength } from 'class-validator'
 
 export class CreateUserRequestDto {
   @MaxLength(12)
+  @MinLength(2)
   @IsString()
-  public username: string
+  public nickname: string
 
   @MaxLength(254)
   @IsEmail()

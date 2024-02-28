@@ -21,7 +21,7 @@ enum UserRole {
 /// 사용자
 model User {
   id         Int      @id @default(autoincrement())
-  username   String   @unique @db.VarChar(12)
+  nickname   String   @unique @db.VarChar(12)
   email      String   @unique @db.VarChar(254)
   password   String   @db.VarChar(128)
   role       UserRole @default(USER)
