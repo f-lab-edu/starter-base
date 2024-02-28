@@ -13,11 +13,11 @@ export class UsersService {
     return bcrypt.hash(password, SALT_ROUNDS)
   }
 
-  async createUser({ username, email, password }: CreateUserRequestDto) {
-    const isExistUsername = !!(await this.usersRepository.findByUsername(username))
+  async createUser({ nickname, email, password }: CreateUserRequestDto) {
+    const isExistNickname = !!(await this.usersRepository.findByNickname(nickname))
 
-    if (isExistUsername) {
-      throw new ConflictException('Duplicated username')
+    if (isExistNickname) {
+      throw new ConflictException('Duplicated nickname')
     }
 
     const isExistEmail = !!(await this.usersRepository.findByEmail(email))
@@ -27,6 +27,6 @@ export class UsersService {
     }
 
     const hashedPassword = await this.hashPassword(password)
-    await this.usersRepository.create(username, email, hashedPassword)
+    await this.usersRepository.create(nickname, email, hashedPassword)
   }
 }

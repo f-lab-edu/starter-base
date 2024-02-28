@@ -9,11 +9,11 @@ export class UsersRepository {
     return this.prisma.user.findUnique({ where: { email } })
   }
 
-  async findByUsername(username: string) {
-    return this.prisma.user.findUnique({ where: { username } })
+  async findByNickname(nickname: string) {
+    return this.prisma.user.findUnique({ where: { nickname } })
   }
 
-  async create(username: string, email: string, password: string) {
-    return this.prisma.user.create({ data: { username, email, password } })
+  async create(nickname: string, email: string, password: string) {
+    return this.prisma.user.create({ data: { nickname, email, password } })
   }
 }
