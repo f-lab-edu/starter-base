@@ -30,3 +30,11 @@ model User {
 
   @@map(name: "user")
 }
+
+/// 프로젝트 카테고리
+model ProjectCategory {
+  id   Int    @id @default(autoincrement())
+  name String @db.VarChar(12)
+
+  @@map(name: "project_category")
+}
