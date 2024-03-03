@@ -77,5 +77,30 @@ model Project {
   category      ProjectCategory @relation(fields: [category_id], references: [id]) /// 카테고리
   category_id   Int
 
+  ProjectSchedule ProjectSchedule[] /// 스케줄(일정)
+
   @@map(name: "project")
+}
+
+/// 프로젝트 스케줄 타입 enum
+enum ProjectScheduleType {
+  FUNDING_START_DATE /// 펀딩 시작일
+  FUNDING_DUE_DATE /// 펀딩 마감일
+  PAYMENT_DUE_DATE /// 결제 마감일
+  PAYMENT_SETTLEMENT_DATE /// 정산일
+
+  @@map(name: "project_schedule_type")
+}
+
+/// 프로젝트 스케줄
+model ProjectSchedule {
+  id         Int                 @id @default(autoincrement())
+  type       ProjectScheduleType
+  created_at DateTime            @default(now())
+  updated_at DateTime            @updatedAt
+
+  project    Project @relation(fields: [project_id], references: [id]) /// 프로젝트
+  project_id Int
+
+  @@map(name: "project_schedule")
 }
