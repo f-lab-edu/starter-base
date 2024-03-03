@@ -122,6 +122,8 @@ model ProjectReword {
   project    Project @relation(fields: [project_id], references: [id]) /// 프로젝트
   project_id Int
 
+  sponsorship_reword SponsorshipReword[] /// 후원 선물 내역
+
   @@map(name: "project_reword")
 }
 
@@ -137,5 +139,22 @@ model Sponsorship {
   created_by    User    @relation(fields: [created_by_id], references: [id]) /// 후원자
   created_by_id Int
 
+  sponsorship_reword SponsorshipReword[] /// 후원 선물 내역
+
   @@map(name: "sponsorship")
+}
+
+/// 후원 선물 내역
+model SponsorshipReword {
+  id         Int      @id @default(autoincrement())
+  count      Int /// 선물(project_reword) 개수
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  reword         ProjectReword @relation(fields: [reword_id], references: [id]) /// 후원한 선물
+  reword_id      Int
+  sponsorship    Sponsorship   @relation(fields: [sponsorship_id], references: [id]) /// 후원 내역
+  sponsorship_id Int
+
+  @@map(name: "sponsorship_reword")
 }
