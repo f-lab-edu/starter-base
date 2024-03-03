@@ -28,6 +28,8 @@ model User {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
+  Project Project[]
+
   @@map(name: "user")
 }
 
@@ -36,5 +38,44 @@ model ProjectCategory {
   id   Int    @id @default(autoincrement())
   name String @db.VarChar(12)
 
+  Project Project[]
+
   @@map(name: "project_category")
+}
+
+/// 프로젝트 상태
+enum ProjectStatus {
+  REVIEW_PENDING /// 심사 대기
+  REVIEW_PASSED /// 심사 통과
+  REVIEW_FAILED /// 심사 불통과
+  PROJECT_CANCELED /// 프로젝트 취소
+  FUNDING_OPENED /// 펀딩 오픈(진행중)
+  FUNDING_SUCCESS /// 펀딩 성사
+  FUNDING_FAILURE /// 펀딩 무산
+  FUNDING_CANCELED /// 펀딩 취소
+  SETTLEMENT_COMPLETED /// 정산 완료
+  PROJECT_HALTED /// 프로젝트 중단
+
+  @@map(name: "project_status")
+}
+
+/// 프로젝트
+model Project {
+  id               Int           @id @default(autoincrement())
+  status           ProjectStatus /// 상태
+  title            String        @db.VarChar(32) /// 제목
+  summary          String        @db.VarChar(50) /// 요약
+  description      String        @db.MediumText /// 마크다운 형식 프로젝트 설명
+  thumbnail_url    String        @db.VarChar(2000) /// 대표 이미지 url
+  target_amount    BigInt        @db.BigInt /// 목표 금액
+  collected_amount BigInt        @db.BigInt /// 모인 금액
+  created_at       DateTime      @default(now())
+  updated_at       DateTime      @updatedAt
+
+  created_by    User            @relation(fields: [created_by_id], references: [id]) /// 창작자
+  created_by_id Int
+  category      ProjectCategory @relation(fields: [category_id], references: [id]) /// 카테고리
+  category_id   Int
+
+  @@map(name: "project")
 }
