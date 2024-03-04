@@ -9,12 +9,14 @@ import {
   StreamableFile,
   UploadedFile,
   UseInterceptors,
+  UseGuards,
 } from '@nestjs/common'
 import { FileInterceptor } from '@nestjs/platform-express'
 import { Response } from 'express'
 import { createReadStream } from 'fs'
 import { join } from 'path'
 import { UploadFileResponseDto } from './dto'
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'
 
 @Controller('file')
 export class FileController {
@@ -25,6 +27,7 @@ export class FileController {
    * @param file 업로드할 파일. 현재 image만 허용
    */
   @Post('upload')
+  @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('file'))
   uploadFile(
     @UploadedFile(
