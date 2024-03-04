@@ -6,6 +6,7 @@ import {
   ParseFilePipeBuilder,
   Post,
   Res,
+  StreamableFile,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common'
@@ -13,6 +14,7 @@ import { FileInterceptor } from '@nestjs/platform-express'
 import { Response } from 'express'
 import { createReadStream } from 'fs'
 import { join } from 'path'
+import { UploadFileResponseDto } from './dto'
 
 @Controller('file')
 export class FileController {
@@ -31,7 +33,7 @@ export class FileController {
         .build({ errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY }),
     )
     file: Express.Multer.File,
-  ) {
+  ): UploadFileResponseDto {
     return { filename: file.filename }
   }
 
@@ -40,21 +42,14 @@ export class FileController {
    * @param filename 조회할 파일명
    */
   @Get(':filename')
-  getFile(@Param('filename') filename: string, @Res() res: Response) {
+  getFile(@Param('filename') filename: string, @Res({ passthrough: true }) res: Response): StreamableFile {
     const filePath = join(process.cwd(), 'upload', filename)
     const fileStream = createReadStream(filePath)
 
     res.set({
-      'Content-Type': 'application/octet-stream',
       'Content-Disposition': `attachment; filename=${filename}`,
     })
 
-    fileStream.on('error', (error) => {
-      // TODO: 정형화된 Logger 형식 사용
-      console.error(error)
-      res.status(HttpStatus.NOT_FOUND).send('File not found')
-    })
-
-    fileStream.pipe(res)
+    return new StreamableFile(fileStream)
   }
 }
