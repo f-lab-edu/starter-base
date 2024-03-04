@@ -5,10 +5,11 @@ import { UsersModule } from 'src/users/users.module'
 import { AuthService } from './auth.service'
 import { AuthController } from './auth.controller'
 import { RefreshTokenRepository } from './refresh-token.repository'
+import { JwtStrategy } from './jwt.strategy'
 
 @Module({
   imports: [UsersModule, JwtModule.register({ secret: process.env.JWT_SECRET })],
-  providers: [AuthService, RefreshTokenRepository],
+  providers: [AuthService, RefreshTokenRepository, JwtStrategy],
   controllers: [AuthController],
 })
 export class AuthModule {}

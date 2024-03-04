@@ -8,6 +8,7 @@ import { UsersRepository } from 'src/users/users.repository'
 import { AuthTokensDto, LoginRequestDto } from './dto'
 import { RefreshTokenRepository } from './refresh-token.repository'
 import { MAX_CLIENT_TOKEN_COUNT, REFRESH_TOKEN_EXPIRATION_TIME, REFRESH_TOKEN_REDIS_KEY } from './constants'
+import { AccessTokenPayload, RefreshTokenPayload } from './jwt.payload'
 
 @Injectable()
 export class AuthService {
@@ -17,7 +18,9 @@ export class AuthService {
     private readonly refreshTokenRepository: RefreshTokenRepository,
   ) {}
 
-  /** redis에 refresh token 저장 */
+  /**
+   * redis에 refresh token 저장
+   */
   private async storeRefreshToken(refresh_token: string, userId: number, clientId: string): Promise<void> {
     await this.refreshTokenRepository.set(
       `${REFRESH_TOKEN_REDIS_KEY}:${userId}:${clientId}`,
@@ -26,7 +29,9 @@ export class AuthService {
     )
   }
 
-  /** user id 당 토큰 개수를 제한할 수 있도록 최대 개수를 넘었을 때 오래된 토큰을 제거하는 함수 */
+  /**
+   * user id 당 토큰 개수를 제한할 수 있도록 최대 개수를 넘었을 때 오래된 토큰을 제거하는 함수
+   */
   private async maintainTokenCount(userId: number): Promise<void> {
     const refreshTokens = await this.refreshTokenRepository.getTTLsByPattern(`${REFRESH_TOKEN_REDIS_KEY}:${userId}:*`)
 
@@ -41,6 +46,9 @@ export class AuthService {
     }
   }
 
+  /**
+   * 로그인
+   */
   async login({ email, password }: LoginRequestDto): Promise<AuthTokensDto> {
     const user = await this.usersRepository.findByEmail(email)
 
@@ -55,25 +63,28 @@ export class AuthService {
     }
 
     const clientId = uuidv4()
-    const refreshToken = this.jwtService.sign({
+    const accessTokenPayload: AccessTokenPayload = {
+      sub: user.id,
+      jti: clientId,
+      iat: dayjs().unix(),
+      exp: dayjs().add(1, 'hour').unix(),
+      user_role: user.role,
+    }
+    const accessToken = this.jwtService.sign(accessTokenPayload)
+    const refreshTokenPayload: RefreshTokenPayload = {
       sub: user.id,
       jti: clientId,
       iat: dayjs().unix(),
       exp: dayjs().add(7, 'day').unix(),
-    })
+    }
+    const refreshToken = this.jwtService.sign(refreshTokenPayload)
 
     await this.storeRefreshToken(refreshToken, user.id, clientId)
     await this.maintainTokenCount(user.id)
 
     // TODO: iss - 서버 배포 시 루트 도메인 사용
     return {
-      access_token: this.jwtService.sign({
-        sub: user.id,
-        jti: clientId,
-        iat: dayjs().unix(),
-        exp: dayjs().add(1, 'hour').unix(),
-        user_role: user.role,
-      }),
+      access_token: accessToken,
       refresh_token: refreshToken,
     }
   }
