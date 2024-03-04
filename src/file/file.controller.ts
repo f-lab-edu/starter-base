@@ -30,6 +30,7 @@ export class FileController {
     @UploadedFile(
       new ParseFilePipeBuilder()
         .addFileTypeValidator({ fileType: 'image/*' })
+        .addMaxSizeValidator({ maxSize: 1000 * 1000 * 8 }) // 8MB
         .build({ errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY }),
     )
     file: Express.Multer.File,
