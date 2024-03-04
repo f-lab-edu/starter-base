@@ -12,17 +12,23 @@ export class RefreshTokenRepository {
     })
   }
 
-  /** key value 생성 */
+  /**
+   * key value 생성
+   */
   async set(key: string, value: string, ms: number): Promise<'OK'> {
     return this.redisClient.set(key, value, 'PX', ms)
   }
 
-  /** key들에 해당하는 모든 value 삭제 */
+  /**
+   * key들에 해당하는 모든 value 삭제
+   */
   async del(keys: RedisKey[]): Promise<number> {
     return this.redisClient.del(keys)
   }
 
-  /** pattern에 맞는 모든 key 조회 */
+  /**
+   * pattern에 맞는 모든 key 조회
+   */
   private async getKeysByPattern(pattern: string): Promise<RedisKey[]> {
     let cursor = '0'
     let keys: RedisKey[] = []
@@ -36,7 +42,9 @@ export class RefreshTokenRepository {
     return keys
   }
 
-  /** pattern에 맞는 모든 key의 모든 ttl 조회 */
+  /**
+   * pattern에 맞는 모든 key의 모든 ttl 조회
+   */
   async getTTLsByPattern(pattern: string): Promise<{ key: RedisKey; ttl: number }[]> {
     const keys = await this.getKeysByPattern(pattern)
 
