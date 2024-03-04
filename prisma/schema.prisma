@@ -61,6 +61,7 @@ enum ProjectStatus {
 }
 
 /// 프로젝트
+/// 창작자가 펀딩을 진행할 프로젝트에 관한 정보
 model Project {
   id               Int           @id @default(autoincrement())
   status           ProjectStatus /// 상태
@@ -96,11 +97,13 @@ enum ProjectScheduleType {
 }
 
 /// 프로젝트 스케줄
+/// 하나의 프로젝트의 진행 일정에 관한 정보
 model ProjectSchedule {
-  id         Int                 @id @default(autoincrement())
-  type       ProjectScheduleType
-  created_at DateTime            @default(now())
-  updated_at DateTime            @updatedAt
+  id           Int                 @id @default(autoincrement())
+  type         ProjectScheduleType
+  scheduled_at DateTime /// 스케줄 일시
+  created_at   DateTime            @default(now())
+  updated_at   DateTime            @updatedAt
 
   project    Project @relation(fields: [project_id], references: [id]) /// 프로젝트
   project_id Int
@@ -109,6 +112,7 @@ model ProjectSchedule {
 }
 
 /// 프로젝트 선물
+/// 사용자가 프로젝트를 후원할 경우 선택할 수 있는 선물에 관한 정보
 model ProjectReword {
   id                     Int      @id @default(autoincrement())
   title                  String   @db.VarChar(50) /// 제목
@@ -129,6 +133,7 @@ model ProjectReword {
 
 // TODO: 결제 정보 추가해야 함
 /// 프로젝트 후원
+/// 사용자가 특정 프로젝트를 후원할 경우 생성되는 정보
 model Sponsorship {
   id         Int      @id @default(autoincrement())
   created_at DateTime @default(now())
@@ -145,6 +150,7 @@ model Sponsorship {
 }
 
 /// 후원 선물 내역
+/// 한 번의 후원에서 사용자가 선택한 선물에 대한 정보
 model SponsorshipReword {
   id         Int      @id @default(autoincrement())
   count      Int /// 선물(project_reword) 개수
