@@ -8,6 +8,10 @@ USER nonroot
 WORKDIR /app
 
 COPY --chmod=646 . .
+
+# 에러 해결:
+# Error: Cannot find module '/app/node_modules/bcrypt/lib/binding/napi-v3/bcrypt_lib.node'
+RUN npm install node-gyp
 RUN npm install --ignore-scripts
 # RUN npx prisma generate
 CMD ["npm", "run", "start:local"]
