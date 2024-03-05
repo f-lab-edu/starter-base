@@ -15,6 +15,10 @@ import { v4 as uuidv4 } from 'uuid'
           return callback(null, `${uuidv4()}${extname(file.originalname)}`)
         },
       }),
+      limits: {
+        fileSize: 1024 * 1024 * 1024, // 1GB
+        files: 1,
+      },
     }),
   ],
   controllers: [FileController],
