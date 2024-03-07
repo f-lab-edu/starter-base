@@ -13,5 +13,6 @@ COPY --chmod=646 . .
 # Error: Cannot find module '/app/node_modules/bcrypt/lib/binding/napi-v3/bcrypt_lib.node'
 RUN npm install --ignore-scripts node-gyp
 RUN npm install --ignore-scripts
+RUN npm rebuild bcrypt
 # RUN npx prisma generate
 CMD ["npm", "run", "start:local"]
