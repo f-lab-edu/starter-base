@@ -6,6 +6,7 @@ import { AuthModule } from './auth/auth.module'
 import { UsersModule } from './users/users.module'
 import { FileModule } from './file/file.module'
 import { ProjectCategoryModule } from './project-category/project-category.module'
+import { ProjectModule } from './project/project.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { ProjectCategoryModule } from './project-category/project-category.modul
     UsersModule,
     FileModule,
     ProjectCategoryModule,
+    ProjectModule,
   ],
   controllers: [AppController],
   providers: [AppService],
