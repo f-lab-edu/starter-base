@@ -1,22 +1,22 @@
 import { ProjectStatus } from '@prisma/client'
-import { Project } from './domain'
+import { Project } from './domain/project'
 
 /**
  * Project 빌더
  */
 export class ProjectBulider {
-  private title: string = ''
-  private summary: string = ''
-  private description: string = ''
-  private thumbnail_url: string = ''
-  private target_amount: bigint = BigInt(0)
-  private collected_amount: bigint = BigInt(0)
+  private title: string
+  private summary: string
+  private description: string
+  private thumbnail_url: string
+  private target_amount: bigint
+  private collected_amount: bigint
   private created_by_id: number
   private category_id?: number
 
   constructor(private status: ProjectStatus, private id?: number) {}
 
-  setContents(title?: string, summary?: string, description?: string, thumbnail_url?: string) {
+  setContents(title: string = '', summary: string = '', description: string = '', thumbnail_url: string = '') {
     this.title = title
     this.summary = summary
     this.description = description
@@ -24,7 +24,7 @@ export class ProjectBulider {
     return this
   }
 
-  setAmount(target_amount?: bigint, collected_amount?: bigint) {
+  setAmount(target_amount: bigint = BigInt(0), collected_amount: bigint = BigInt(0)) {
     this.target_amount = target_amount
     this.collected_amount = collected_amount
     return this

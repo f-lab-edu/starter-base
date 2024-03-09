@@ -1,6 +1,6 @@
 import { ProjectStatus } from '@prisma/client'
+import { Project } from './project'
 import { DraftProjectState } from './draft-project-state'
-import { Project } from '.'
 
 export class ProjectStateFactory {
   static create(project: Project) {

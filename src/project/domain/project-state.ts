@@ -1,4 +1,4 @@
-import { Project } from '.'
+import { Project } from './project'
 
 export class ProjectState {
   constructor(public project: Project) {}
