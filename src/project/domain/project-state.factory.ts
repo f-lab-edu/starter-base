@@ -1,9 +1,10 @@
 import { ProjectStatus } from '@prisma/client'
 import { Project } from './project'
 import { DraftProjectState } from './draft-project-state'
+import { ProjectState } from './project-state'
 
 export class ProjectStateFactory {
-  static create(project: Project) {
+  static create(project: Project): ProjectState {
     switch (project.status) {
       case ProjectStatus.DRAFT:
         return new DraftProjectState(project)
