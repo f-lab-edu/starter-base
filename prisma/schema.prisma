@@ -66,11 +66,11 @@ enum ProjectStatus {
 model Project {
   id               Int           @id @default(autoincrement())
   status           ProjectStatus @default(DRAFT) /// 상태
-  title            String?       @db.VarChar(32) /// 제목
-  summary          String?       @db.VarChar(50) /// 요약
-  description      String?       @db.MediumText /// 마크다운 형식 프로젝트 설명
-  thumbnail_url    String?       @db.VarChar(2000) /// 대표 이미지 url
-  target_amount    BigInt?       @db.BigInt /// 목표 금액
+  title            String        @db.VarChar(32) /// 제목
+  summary          String        @db.VarChar(50) /// 요약
+  description      String        @db.MediumText /// 마크다운 형식 프로젝트 설명
+  thumbnail_url    String        @db.VarChar(2000) /// 대표 이미지 url
+  target_amount    BigInt        @default(0) @db.BigInt /// 목표 금액
   collected_amount BigInt        @default(0) @db.BigInt /// 모인 금액
   created_at       DateTime      @default(now())
   updated_at       DateTime      @updatedAt
