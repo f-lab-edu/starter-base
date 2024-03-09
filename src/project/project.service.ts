@@ -26,6 +26,6 @@ export class ProjectService {
       .setCategoryId(category_id)
       .build()
 
-    await this.projectRepository.save(project)
+    await this.projectRepository.create(project)
   }
 }

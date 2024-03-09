@@ -16,13 +16,12 @@ export class ProjectRepository {
     })
   }
 
-  async save(_project: Project): Promise<void> {
+  async create(_project: Project): Promise<void> {
     if (!_project.created_by_id) {
       throw new InternalServerErrorException('Required user id')
     }
 
-    const project: Omit<ProjectScheme, 'created_at' | 'updated_at'> = {
-      id: _project.id || -1,
+    const project: Omit<ProjectScheme, 'created_at' | 'updated_at' | 'id'> = {
       status: _project.status,
       title: _project.title,
       summary: _project.summary,
@@ -34,10 +33,8 @@ export class ProjectRepository {
       category_id: _project.category_id,
     }
 
-    await this.prisma.project.upsert({
-      where: { id: project.id },
-      create: project,
-      update: project,
+    await this.prisma.project.create({
+      data: project,
     })
   }
 }
