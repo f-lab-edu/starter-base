@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UseGuards, Req, ValidationPipe } from '@nestjs/common'
+import { Body, Controller, Post, UseGuards, Req } from '@nestjs/common'
 import { CreateProjectRequestDto } from './dto'
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'
 import { Request } from 'express'
