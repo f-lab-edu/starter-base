@@ -1,13 +1,22 @@
-import { Project as ProjectScheme } from '@prisma/client'
+import { Project as ProjectScheme, ProjectStatus } from '@prisma/client'
 import { Injectable, InternalServerErrorException } from '@nestjs/common'
 import { PrismaService } from 'src/prisma/prisma.service'
-import { Project } from './domain'
+import { Project } from './domain/project'
 
 @Injectable()
 export class ProjectRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async save(_project: Project) {
+  async getDraftProjectCount(created_by_id: number): Promise<number> {
+    return this.prisma.project.count({
+      where: {
+        created_by_id,
+        status: ProjectStatus.DRAFT,
+      },
+    })
+  }
+
+  async save(_project: Project): Promise<void> {
     if (!_project.created_by_id) {
       throw new InternalServerErrorException('Required user id')
     }
