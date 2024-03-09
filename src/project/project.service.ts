@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common'
-import { ProjectRepository } from './project.repository'
+import { ProjectStatus } from '@prisma/client'
 import { CreateProjectRequestDto } from './dto'
 import { Project } from './domain'
+import { ProjectRepository } from './project.repository'
 import { ProjectBulider } from './project.builder'
-import { ProjectStatus } from '@prisma/client'
 
 @Injectable()
 export class ProjectService {

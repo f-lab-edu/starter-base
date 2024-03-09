@@ -1,5 +1,4 @@
-import { Project } from './project'
-import { ProjectState } from './project-state'
+import { Project, ProjectState } from '.'
 
 export class DraftProjectState extends ProjectState {
   constructor(project: Project) {

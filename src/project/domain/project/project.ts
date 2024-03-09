@@ -1,6 +1,5 @@
 import { ProjectStatus } from '@prisma/client'
-import { ProjectState } from './project-state'
-import { ProjectStateFactory } from './project-state.factory'
+import { ProjectStateFactory, ProjectState } from '.'
 
 /**
  * Project 도메인
