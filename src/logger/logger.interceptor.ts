@@ -3,9 +3,7 @@ import { Observable, tap } from 'rxjs'
 
 export class LoggerInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, call$: CallHandler): Observable<any> {
-    const req = context.switchToHttp().getRequest()
-    const method = req.method
-    const url = req.url
+    const { method, url } = context.switchToHttp().getRequest()
 
     const now = Date.now()
     return call$.handle().pipe(
