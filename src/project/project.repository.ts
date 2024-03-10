@@ -2,6 +2,7 @@ import { Project as ProjectScheme, ProjectStatus } from '@prisma/client'
 import { Injectable, InternalServerErrorException } from '@nestjs/common'
 import { PrismaService } from 'src/prisma/prisma.service'
 import { Project } from './domain/project'
+import { CreateProjectResponseDto } from './dto'
 
 @Injectable()
 export class ProjectRepository {
@@ -16,7 +17,7 @@ export class ProjectRepository {
     })
   }
 
-  async create(_project: Project): Promise<void> {
+  async create(_project: Project): Promise<CreateProjectResponseDto> {
     if (!_project.created_by_id) {
       throw new InternalServerErrorException('Required user id')
     }
@@ -33,8 +34,21 @@ export class ProjectRepository {
       category_id: _project.category_id,
     }
 
-    await this.prisma.project.create({
+    const newProject = await this.prisma.project.create({
       data: project,
     })
+
+    return {
+      id: newProject.id,
+      status: newProject.status,
+      title: newProject.title,
+      summary: newProject.summary,
+      description: newProject.description,
+      thumbnail_url: newProject.thumbnail_url,
+      target_amount: newProject.target_amount,
+      collected_amount: newProject.collected_amount,
+      created_by_id: newProject.created_by_id,
+      category_id: newProject.category_id,
+    }
   }
 }

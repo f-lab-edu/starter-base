@@ -1,5 +1,5 @@
 import { Body, Controller, Post, UseGuards, Req } from '@nestjs/common'
-import { CreateProjectRequestDto } from './dto'
+import { CreateProjectRequestDto, CreateProjectResponseDto } from './dto'
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'
 import { Request } from 'express'
 import { ProjectService } from './project.service'
@@ -10,7 +10,7 @@ export class ProjectController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
-  async createProject(@Body() dto: CreateProjectRequestDto, @Req() req: Request) {
-    await this.projectService.createProject(dto, req.user.userId)
+  async createProject(@Body() dto: CreateProjectRequestDto, @Req() req: Request): Promise<CreateProjectResponseDto> {
+    return await this.projectService.createProject(dto, req.user.userId)
   }
 }
