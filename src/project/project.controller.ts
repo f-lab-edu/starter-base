@@ -6,17 +6,16 @@ import { ProjectService } from './project.service'
 import { PageRequestDto } from 'src/pagination/dto'
 
 @Controller('project')
+@UseGuards(JwtAuthGuard)
 export class ProjectController {
   constructor(private readonly projectService: ProjectService) {}
 
   @Post()
-  @UseGuards(JwtAuthGuard)
   async createProject(@Body() dto: CreateProjectRequestDto, @Req() req: Request): Promise<CreateProjectResponseDto> {
     return await this.projectService.createProject(dto, req.user.userId)
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard)
   async getProjects(@Query() dto: PageRequestDto): Promise<GetProjectsResponseDto> {
     return await this.projectService.getProjects(dto)
   }
