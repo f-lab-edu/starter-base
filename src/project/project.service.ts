@@ -37,13 +37,12 @@ export class ProjectService {
       skip: dto.getSkip(),
       take: dto.getTake(),
     })
-    const pages = dto.getPages(total)
 
     return {
+      total,
       prev_page: dto.getPrevPage(),
       next_page: dto.getNextPage(total),
-      total,
-      pages,
+      pages: dto.getPages(total),
       page,
       size,
       items,
