@@ -1,9 +1,10 @@
 import { ConflictException, Injectable } from '@nestjs/common'
 import { ProjectStatus } from '@prisma/client'
-import { CreateProjectRequestDto, CreateProjectResponseDto } from './dto'
+import { CreateProjectRequestDto, CreateProjectResponseDto, GetProjectsResponseDto } from './dto'
 import { ProjectRepository } from './project.repository'
 import { ProjectBulider } from './project.builder'
 import { Project } from './domain/project'
+import { PageRequestDto } from 'src/pagination/dto'
 
 @Injectable()
 export class ProjectService {
@@ -27,5 +28,25 @@ export class ProjectService {
       .build()
 
     return await this.projectRepository.create(project)
+  }
+
+  async getProjects(dto: PageRequestDto): Promise<GetProjectsResponseDto> {
+    const { page, size } = dto
+
+    const [items, total] = await this.projectRepository.getProjectsWithTotal({
+      skip: dto.getSkip(),
+      take: dto.getTake(),
+    })
+    const pages = dto.getPages(total)
+
+    return {
+      prev_page: dto.getPrevPage(),
+      next_page: dto.getNextPage(total),
+      total,
+      pages,
+      page,
+      size,
+      items,
+    }
   }
 }

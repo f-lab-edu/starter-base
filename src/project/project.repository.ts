@@ -2,7 +2,7 @@ import { Project as ProjectScheme, ProjectStatus } from '@prisma/client'
 import { Injectable, InternalServerErrorException } from '@nestjs/common'
 import { PrismaService } from 'src/prisma/prisma.service'
 import { Project } from './domain/project'
-import { CreateProjectResponseDto } from './dto'
+import { CreateProjectResponseDto, ProjectSummaryDto } from './dto'
 
 @Injectable()
 export class ProjectRepository {
@@ -50,5 +50,28 @@ export class ProjectRepository {
       created_by_id: newProject.created_by_id,
       category_id: newProject.category_id,
     }
+  }
+
+  async getProjectsWithTotal({ skip, take }: { skip: number; take: number }): Promise<[ProjectSummaryDto[], number]> {
+    const [items, total] = await this.prisma.$transaction([
+      this.prisma.project.findMany({
+        skip,
+        take,
+        select: {
+          id: true,
+          status: true,
+          title: true,
+          summary: true,
+          thumbnail_url: true,
+          target_amount: true,
+          collected_amount: true,
+          category: { select: { id: true, name: true } },
+          created_by: { select: { id: true, nickname: true } },
+        },
+      }),
+      this.prisma.project.count(),
+    ])
+
+    return [items, total]
   }
 }
