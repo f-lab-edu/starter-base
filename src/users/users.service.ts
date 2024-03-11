@@ -1,7 +1,7 @@
 import { ConflictException, Injectable } from '@nestjs/common'
 import * as bcrypt from 'bcrypt'
 
-import { CreateUserRequestDto } from './dto'
+import { CreateUserRequestDto, CreateUserResponseDto } from './dto'
 import { UsersRepository } from './users.repository'
 import { SALT_ROUNDS } from './constants'
 
@@ -13,7 +13,7 @@ export class UsersService {
     return bcrypt.hash(password, SALT_ROUNDS)
   }
 
-  async createUser({ nickname, email, password }: CreateUserRequestDto) {
+  async createUser({ nickname, email, password }: CreateUserRequestDto): Promise<CreateUserResponseDto> {
     const isExistNickname = !!(await this.usersRepository.findByNickname(nickname))
 
     if (isExistNickname) {
@@ -27,6 +27,6 @@ export class UsersService {
     }
 
     const hashedPassword = await this.hashPassword(password)
-    await this.usersRepository.create(nickname, email, hashedPassword)
+    return await this.usersRepository.create(nickname, email, hashedPassword)
   }
 }

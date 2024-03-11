@@ -4,6 +4,11 @@ import * as cookieParser from 'cookie-parser'
 
 import { AppModule } from './app.module'
 
+// serialize bigint
+BigInt.prototype['toJSON'] = function () {
+  return parseInt(this)
+}
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
   app.enableCors({

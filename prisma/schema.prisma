@@ -46,6 +46,7 @@ model ProjectCategory {
 
 /// 프로젝트 상태
 enum ProjectStatus {
+  DRAFT /// 프로젝트 심사 제출 전
   REVIEW_PENDING /// 심사 대기
   REVIEW_PASSED /// 심사 통과
   REVIEW_FAILED /// 심사 불통과
@@ -64,20 +65,20 @@ enum ProjectStatus {
 /// 창작자가 펀딩을 진행할 프로젝트에 관한 정보
 model Project {
   id               Int           @id @default(autoincrement())
-  status           ProjectStatus /// 상태
+  status           ProjectStatus @default(DRAFT) /// 상태
   title            String        @db.VarChar(32) /// 제목
   summary          String        @db.VarChar(50) /// 요약
   description      String        @db.MediumText /// 마크다운 형식 프로젝트 설명
   thumbnail_url    String        @db.VarChar(2000) /// 대표 이미지 url
-  target_amount    BigInt        @db.BigInt /// 목표 금액
-  collected_amount BigInt        @db.BigInt /// 모인 금액
+  target_amount    BigInt        @default(0) @db.BigInt /// 목표 금액
+  collected_amount BigInt        @default(0) @db.BigInt /// 모인 금액
   created_at       DateTime      @default(now())
   updated_at       DateTime      @updatedAt
 
-  created_by    User            @relation(fields: [created_by_id], references: [id]) /// 창작자
+  created_by    User             @relation(fields: [created_by_id], references: [id]) /// 창작자
   created_by_id Int
-  category      ProjectCategory @relation(fields: [category_id], references: [id]) /// 카테고리
-  category_id   Int
+  category      ProjectCategory? @relation(fields: [category_id], references: [id]) /// 카테고리
+  category_id   Int?
 
   project_schedule ProjectSchedule[] /// 스케줄(일정)
   project_reword   ProjectReword[] /// 프로젝트 선물 리스트

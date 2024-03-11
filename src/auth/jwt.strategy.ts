@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common'
 import { Request } from 'express'
 import { Strategy } from 'passport-jwt'
 import { AccessTokenPayload } from './jwt.payload'
+import { JwtDto } from './dto'
 
 const fromAuthCookie = (request: Request) => {
   if (request?.cookies) {
@@ -21,7 +22,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     })
   }
 
-  async validate(payload: AccessTokenPayload) {
+  async validate(payload: AccessTokenPayload): Promise<JwtDto> {
     return { userId: payload.sub, userRole: payload.user_role }
   }
 }
