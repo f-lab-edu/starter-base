@@ -12,11 +12,6 @@ BigInt.prototype['toJSON'] = function () {
   return parseInt(this)
 }
 
-// serialize bigint
-BigInt.prototype['toJSON'] = function () {
-  return parseInt(this)
-}
-
 async function bootstrap() {
   const instance = winston.createLogger({
     transports: [
