@@ -3,15 +3,13 @@ import { Prisma, PrismaClient } from '@prisma/client'
 
 @Injectable()
 export class PrismaService extends PrismaClient<Prisma.PrismaClientOptions, 'query'> implements OnModuleInit {
-  private readonly logger = new Logger(PrismaService.name)
-
   constructor() {
     super({
       log: [
         { emit: 'event', level: 'query' },
-        { emit: 'stdout', level: 'info' },
-        { emit: 'stdout', level: 'warn' },
-        { emit: 'stdout', level: 'error' },
+        { emit: 'event', level: 'info' },
+        { emit: 'event', level: 'warn' },
+        { emit: 'event', level: 'error' },
       ],
     })
   }
@@ -20,7 +18,7 @@ export class PrismaService extends PrismaClient<Prisma.PrismaClientOptions, 'que
     await this.$connect()
 
     this.$on('query', (event: Prisma.QueryEvent) => {
-      this.logger.log(`Query: ${event.query} \x1b[33m+${event.duration}ms\x1b[32m`)
+      Logger.debug(`Query: ${event.query} +${event.duration}ms`, PrismaService.name)
     })
   }
 }
