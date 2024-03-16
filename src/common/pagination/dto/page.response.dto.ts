@@ -1,3 +1,5 @@
+import { ApiProperty } from '@nestjs/swagger'
+
 /**
  * @param prev_page 이전 페이지
  * @param next_page 다음 페이지
@@ -7,11 +9,24 @@
  * @param size 페이지 크기
  */
 export class PageResponseDto<T> {
-  prev_page?: number | null
-  next_page?: number | null
-  total?: number
-  pages?: number
-  page?: number
-  size?: number
+  @ApiProperty({ nullable: true })
+  prev_page: number | null
+
+  @ApiProperty({ nullable: true })
+  next_page: number | null
+
+  @ApiProperty()
+  total: number
+
+  @ApiProperty()
+  pages: number
+
+  @ApiProperty()
+  page: number
+
+  @ApiProperty()
+  size: number
+
+  @ApiProperty()
   items: T[]
 }
