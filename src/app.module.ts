@@ -7,7 +7,7 @@ import { UsersModule } from './users/users.module'
 import { FileModule } from './file/file.module'
 import { ProjectCategoryModule } from './project-category/project-category.module'
 import { ProjectModule } from './project/project.module'
-import { LoggerMiddleware } from './logger/logger.middleware'
+import { LoggerMiddleware } from './common/logger'
 
 @Module({
   imports: [

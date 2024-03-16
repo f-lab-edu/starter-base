@@ -4,7 +4,7 @@ import { CreateProjectRequestDto, CreateProjectResponseDto, GetProjectsResponseD
 import { ProjectRepository } from './project.repository'
 import { ProjectBulider } from './project.builder'
 import { Project } from './domain/project'
-import { PageRequestDto } from 'src/pagination/dto'
+import { PageRequestDto } from 'src/common/pagination'
 
 @Injectable()
 export class ProjectService {

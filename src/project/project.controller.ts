@@ -3,7 +3,7 @@ import { CreateProjectRequestDto, CreateProjectResponseDto, GetProjectsResponseD
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'
 import { Request } from 'express'
 import { ProjectService } from './project.service'
-import { PageRequestDto } from 'src/pagination/dto'
+import { PageRequestDto } from 'src/common/pagination'
 
 @Controller('project')
 @UseGuards(JwtAuthGuard)
