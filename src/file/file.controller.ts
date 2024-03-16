@@ -15,9 +15,11 @@ import { FileInterceptor } from '@nestjs/platform-express'
 import { Response } from 'express'
 import { createReadStream } from 'fs'
 import { join } from 'path'
+import { ApiBody, ApiConsumes, ApiTags, ApiCreatedResponse } from '@nestjs/swagger'
 import { UploadFileResponseDto } from './dto'
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'
 
+@ApiTags('file')
 @Controller('file')
 export class FileController {
   constructor() {}
@@ -27,6 +29,9 @@ export class FileController {
    * @param file 업로드할 파일. 현재 image만 허용
    */
   @Post('upload')
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ schema: { type: 'object', properties: { file: { type: 'string', format: 'binary' } } } })
+  @ApiCreatedResponse({ type: UploadFileResponseDto })
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('file'))
   uploadFile(
