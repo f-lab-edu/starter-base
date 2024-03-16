@@ -1,8 +1,14 @@
 FROM node:20 AS builder
 WORKDIR /app
+
+# https://github.com/prisma/prisma/issues/20479
+RUN apt-get update && apt-get upgrade -y && apt-get -qy install openssl
+
 COPY . .
 RUN npm ci --ignore-scripts
-# RUN npx prisma generate
+# bcrypt 관련 런타임 오류
+RUN npm rebuild bcrypt
+RUN npx prisma generate
 RUN npm run build
 
 FROM node:20-alpine
@@ -14,5 +20,7 @@ USER nonroot
 WORKDIR /app
 
 ENV NODE_ENV production
-COPY --from=builder /app ./
+# container 내에서 prisma migrate engine을 실행하기 위한 권한
+# Error: Can't write to /app/node_modules/@prisma/engines please make sure you install "prisma" with the right permissions.
+COPY --from=builder --chmod=647 /app ./
 CMD ["npm", "run", "start:prod"]
