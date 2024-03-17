@@ -14,6 +14,7 @@ services:
       - ./test:/app/test
       - ./prisma:/app/prisma
       - ./upload:/app/upload
+      - ./logs:/app/logs
       - ./package.json:/app/package.json
     ports:
       - 80:8000

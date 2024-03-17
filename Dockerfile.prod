@@ -19,7 +19,7 @@ USER nonroot
 
 WORKDIR /app
 
-ENV NODE_ENV production
+ENV NODE_ENV prod
 # container 내에서 prisma migrate engine을 실행하기 위한 권한
 # Error: Can't write to /app/node_modules/@prisma/engines please make sure you install "prisma" with the right permissions.
 COPY --from=builder --chmod=647 /app ./

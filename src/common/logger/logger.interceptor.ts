@@ -9,10 +9,10 @@ export class LoggerInterceptor implements NestInterceptor {
     return call$.handle().pipe(
       tap({
         next: () => {
-          Logger.debug(`${method} ${url} +${Date.now() - now}ms`, context.getClass().name)
+          Logger.log(`${method} ${url} +${Date.now() - now}ms`, context.getClass().name)
         },
         error: (error) => {
-          Logger.debug(`${method} ${url} +${Date.now() - now}ms ${error}`, context.getClass().name)
+          Logger.error(`${method} ${url} +${Date.now() - now}ms ${error}`, context.getClass().name)
         },
       }),
     )

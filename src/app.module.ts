@@ -12,7 +12,7 @@ import { LoggerMiddleware } from './common/logger'
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: [`${__dirname}/config/env/.${process.env.NODE_ENV}.env`],
+      envFilePath: [`${__dirname}/config/env/.${process.env.NODE_ENV}.env`, `${process.cwd()}/.env`],
     }),
     AuthModule,
     UsersModule,
