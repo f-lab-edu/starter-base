@@ -15,4 +15,5 @@ RUN npm install --ignore-scripts node-gyp
 RUN npm install --ignore-scripts
 RUN npm rebuild bcrypt
 RUN npx prisma generate
+ENV NODE_ENV local
 CMD ["npm", "run", "start:local"]

@@ -1,15 +1,15 @@
 import Redis, { RedisKey } from 'ioredis'
-import { Injectable } from '@nestjs/common'
+import { Inject, Injectable } from '@nestjs/common'
+import { configuration } from 'src/common/config/env'
+import { ConfigType } from '@nestjs/config'
 
 @Injectable()
 export class RefreshTokenRepository {
   private readonly redisClient: Redis
 
-  constructor() {
-    this.redisClient = new Redis({
-      host: process.env.REDIS_HOST,
-      port: parseInt(process.env.REDIS_PORT, 10),
-    })
+  constructor(@Inject(configuration.KEY) config: ConfigType<typeof configuration>) {
+    const { host, port } = config.redis
+    this.redisClient = new Redis({ host, port })
   }
 
   /**
