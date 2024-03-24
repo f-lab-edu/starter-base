@@ -1,9 +1,11 @@
 import { PassportStrategy } from '@nestjs/passport'
-import { Injectable } from '@nestjs/common'
+import { Inject, Injectable } from '@nestjs/common'
 import { Request } from 'express'
 import { Strategy } from 'passport-jwt'
 import { AccessTokenPayload } from './jwt.payload'
 import { JwtDto } from './dto'
+import { configuration } from 'src/common/config/env'
+import { ConfigType } from '@nestjs/config'
 
 const fromAuthCookie = (request: Request) => {
   if (request?.cookies) {
@@ -14,11 +16,11 @@ const fromAuthCookie = (request: Request) => {
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor() {
+  constructor(@Inject(configuration.KEY) config: ConfigType<typeof configuration>) {
     super({
       jwtFromRequest: fromAuthCookie,
       ignoreExpiration: false,
-      secretOrKey: process.env.JWT_SECRET,
+      secretOrKey: config.node.jwtSecret,
     })
   }
 

@@ -1,13 +1,20 @@
-import { Body, Controller, Post, Res } from '@nestjs/common'
+import { Body, Controller, Inject, Post, Res } from '@nestjs/common'
 import { Response } from 'express'
+import { ApiTags } from '@nestjs/swagger'
+import { ConfigType } from '@nestjs/config'
 
 import { ACCESS_TOKEN_EXPIRATION_TIME, REFRESH_TOKEN_EXPIRATION_TIME } from './constants'
 import { LoginRequestDto } from './dto'
 import { AuthService } from './auth.service'
+import { configuration } from 'src/common/config/env'
 
+@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    @Inject(configuration.KEY) private config: ConfigType<typeof configuration>,
+  ) {}
 
   @Post('login')
   async login(@Body() dto: LoginRequestDto, @Res({ passthrough: true }) res: Response): Promise<void> {
@@ -15,7 +22,7 @@ export class AuthController {
 
     // token들 cookie로 설정
     res.cookie('access_token', access_token, {
-      secure: true,
+      secure: this.config.node.isCookieSecure, // TODO: 인증서 적용 시 true
       httpOnly: true,
       sameSite: 'strict',
       maxAge: ACCESS_TOKEN_EXPIRATION_TIME,
@@ -23,7 +30,7 @@ export class AuthController {
       path: '/',
     })
     res.cookie('refresh_token', refresh_token, {
-      secure: true,
+      secure: this.config.node.isCookieSecure, // TODO: 인증서 적용 시 true
       httpOnly: true,
       sameSite: 'strict',
       maxAge: REFRESH_TOKEN_EXPIRATION_TIME,

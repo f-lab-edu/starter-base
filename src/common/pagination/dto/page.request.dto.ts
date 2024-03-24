@@ -1,11 +1,15 @@
+import { ApiProperty } from '@nestjs/swagger'
 import { Type } from 'class-transformer'
 import { IsInt, Max, Min } from 'class-validator'
 
 export class PageRequestDto {
+  @ApiProperty({ required: false })
   @IsInt()
   @Type(() => Number)
-  public page?: number | null
+  @Min(1)
+  public page?: number | null = 1
 
+  @ApiProperty({ required: false })
   @IsInt()
   @Type(() => Number)
   @Min(1)

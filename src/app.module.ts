@@ -7,12 +7,15 @@ import { UsersModule } from './users/users.module'
 import { FileModule } from './file/file.module'
 import { ProjectCategoryModule } from './project-category/project-category.module'
 import { ProjectModule } from './project/project.module'
-import { LoggerMiddleware } from './logger/logger.middleware'
+import { LoggerMiddleware } from './common/logger'
+import { configuration } from './common/config/env'
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: [`${__dirname}/config/env/.${process.env.NODE_ENV}.env`],
+      envFilePath: [`${__dirname}/config/env/.${process.env.NODE_ENV}.env`, `${process.cwd()}/.env`],
+      load: [configuration],
+      isGlobal: true,
     }),
     AuthModule,
     UsersModule,

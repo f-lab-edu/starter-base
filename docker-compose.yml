@@ -8,12 +8,13 @@ services:
       dockerfile: Dockerfile.local
     restart: always
     env_file:
-      - ./src/config/env/.local.env
+      - ./src/common/config/env/.local.env
     volumes:
       - ./src:/app/src
       - ./test:/app/test
       - ./prisma:/app/prisma
       - ./upload:/app/upload
+      - ./logs:/app/logs
       - ./package.json:/app/package.json
     ports:
       - 80:8000

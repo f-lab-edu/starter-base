@@ -1,11 +1,14 @@
-FROM node:20 AS builder
+FROM node:20-alpine3.18 AS builder
 WORKDIR /app
+
 COPY . .
 RUN npm ci --ignore-scripts
-# RUN npx prisma generate
+# bcrypt 관련 런타임 오류
+RUN npm rebuild bcrypt
+RUN npx prisma generate
 RUN npm run build
 
-FROM node:20-alpine
+FROM node:20-alpine3.18
 RUN addgroup -S nonroot \
     && adduser -S nonroot -G nonroot
 RUN echo "nonroot:pass" | chpasswd
@@ -13,6 +16,8 @@ USER nonroot
 
 WORKDIR /app
 
-ENV NODE_ENV production
-COPY --from=builder /app ./
+ENV NODE_ENV prod
+# container 내에서 prisma migrate engine을 실행하기 위한 권한
+# Error: Can't write to /app/node_modules/@prisma/engines please make sure you install "prisma" with the right permissions.
+COPY --from=builder --chmod=647 /app ./
 CMD ["npm", "run", "start:prod"]
