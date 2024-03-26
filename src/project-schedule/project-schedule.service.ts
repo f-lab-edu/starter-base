@@ -15,12 +15,12 @@ export class ProjectScheduleService {
     })
   }
 
-  async getSchedule(scheduleId: number): Promise<ScheduleResponseDto> {
-    if (!scheduleId) {
-      throw new ConflictException('Required project schedule id')
+  async getSchedule({ id, project_id }: { id?: number; project_id?: number }): Promise<ScheduleResponseDto> {
+    if (!id && !project_id) {
+      throw new ConflictException('Required project schedule id or project id')
     }
 
-    const schedule = await this.scheduleRepository.getSchedule(scheduleId)
+    const schedule = await this.scheduleRepository.getSchedule({ id, project_id })
 
     if (!schedule) {
       throw new NotFoundException('Not found project schedule')

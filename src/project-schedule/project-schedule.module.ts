@@ -8,5 +8,6 @@ import { ProjectScheduleRepository } from './project-schedule.repository'
   imports: [PrismaModule],
   providers: [ProjectScheduleService, ProjectScheduleRepository],
   controllers: [ProjectScheduleController],
+  exports: [ProjectScheduleService],
 })
 export class ProjectScheduleModule {}

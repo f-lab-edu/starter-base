@@ -1,6 +1,5 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, UseGuards } from '@nestjs/common'
-import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger'
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'
+import { Body, Controller, Delete, Param, ParseIntPipe, Patch, Post } from '@nestjs/common'
+import { ApiCreatedResponse, ApiTags } from '@nestjs/swagger'
 import { ProjectScheduleService } from './project-schedule.service'
 import { CreateScheduleRequestDto, ScheduleResponseDto } from './dto'
 
@@ -8,7 +7,6 @@ import { CreateScheduleRequestDto, ScheduleResponseDto } from './dto'
 
 @ApiTags('project-schedule')
 @Controller()
-@UseGuards(JwtAuthGuard)
 export class ProjectScheduleController {
   constructor(private readonly scheduleService: ProjectScheduleService) {}
 
@@ -19,12 +17,6 @@ export class ProjectScheduleController {
     @Body() dto: CreateScheduleRequestDto,
   ): Promise<ScheduleResponseDto> {
     return await this.scheduleService.createSchedule(projectId, dto)
-  }
-
-  @Get('/project/schedule/:scheduleId')
-  @ApiOkResponse({ type: ScheduleResponseDto })
-  async getSchedule(@Param('scheduleId', ParseIntPipe) scheduleId: number): Promise<ScheduleResponseDto> {
-    return await this.scheduleService.getSchedule(scheduleId)
   }
 
   @Patch('/project/schedule/:scheduleId')

@@ -39,9 +39,9 @@ export class ProjectScheduleRepository {
     })
   }
 
-  async getSchedule(scheduleId: number): Promise<ScheduleResponseDto> {
+  async getSchedule({ id, project_id }: { id?: number; project_id?: number }): Promise<ScheduleResponseDto> {
     return await this.prisma.projectSchedule.findUnique({
-      where: { id: scheduleId },
+      where: { id, project_id },
       select: {
         id: true,
         funding_start_date: true,
