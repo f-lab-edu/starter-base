@@ -1,5 +1,5 @@
 import { BadRequestException } from '@nestjs/common'
-import dayjs from 'dayjs'
+import * as dayjs from 'dayjs'
 
 const setTimeToEndOfDay = (date: Date) => {
   return dayjs(date).set('hour', 23).set('minute', 59).set('second', 59).set('millisecond', 999).toDate()

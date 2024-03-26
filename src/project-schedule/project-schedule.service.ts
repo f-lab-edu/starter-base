@@ -1,7 +1,7 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common'
 import { ProjectScheduleRepository } from './project-schedule.repository'
 import { CreateScheduleRequestDto, ScheduleResponseDto } from './dto'
-import dayjs from 'dayjs'
+import * as dayjs from 'dayjs'
 
 @Injectable()
 export class ProjectScheduleService {
