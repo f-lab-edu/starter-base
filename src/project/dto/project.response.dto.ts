@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { ProjectStatus } from '@prisma/client'
 
-export class CreateProjectResponseDto {
+export class ProjectResponseDto {
   @ApiProperty()
   id: number
 

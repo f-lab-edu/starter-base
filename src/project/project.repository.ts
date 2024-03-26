@@ -2,7 +2,7 @@ import { Project as ProjectScheme, ProjectStatus } from '@prisma/client'
 import { Injectable, InternalServerErrorException } from '@nestjs/common'
 import { PrismaService } from 'src/prisma/prisma.service'
 import { Project } from './domain/project'
-import { CreateProjectResponseDto, ProjectSummaryDto } from './dto'
+import { ProjectResponseDto, ProjectSummaryDto, UpdateProjectRequestDto } from './dto'
 
 @Injectable()
 export class ProjectRepository {
@@ -17,42 +17,51 @@ export class ProjectRepository {
     })
   }
 
-  async create(_project: Project): Promise<CreateProjectResponseDto> {
-    if (!_project.created_by_id) {
+  async create({
+    status,
+    title,
+    summary,
+    description,
+    thumbnail_url,
+    target_amount,
+    created_by_id,
+    category_id,
+  }: Project): Promise<ProjectResponseDto> {
+    if (!created_by_id) {
       throw new InternalServerErrorException('Required user id')
     }
 
-    const project: Omit<ProjectScheme, 'created_at' | 'updated_at' | 'id'> = {
-      status: _project.status,
-      title: _project.title,
-      summary: _project.summary,
-      description: _project.description,
-      thumbnail_url: _project.thumbnail_url,
-      target_amount: _project.target_amount,
-      collected_amount: _project.collected_amount,
-      created_by_id: _project.created_by_id,
-      category_id: _project.category_id,
+    const project: Omit<ProjectScheme, 'created_at' | 'updated_at' | 'collected_amount' | 'id'> = {
+      status: status,
+      title: title,
+      summary: summary,
+      description: description,
+      thumbnail_url: thumbnail_url,
+      target_amount: target_amount,
+      created_by_id: created_by_id,
+      category_id: category_id,
     }
 
     const newProject = await this.prisma.project.create({
       data: project,
+      select: {
+        id: true,
+        status: true,
+        title: true,
+        summary: true,
+        description: true,
+        thumbnail_url: true,
+        target_amount: true,
+        collected_amount: true,
+        created_by_id: true,
+        category_id: true,
+      },
     })
 
-    return {
-      id: newProject.id,
-      status: newProject.status,
-      title: newProject.title,
-      summary: newProject.summary,
-      description: newProject.description,
-      thumbnail_url: newProject.thumbnail_url,
-      target_amount: newProject.target_amount,
-      collected_amount: newProject.collected_amount,
-      created_by_id: newProject.created_by_id,
-      category_id: newProject.category_id,
-    }
+    return newProject
   }
 
-  async getProjectsWithTotal({ skip, take }: { skip: number; take: number }): Promise<[ProjectSummaryDto[], number]> {
+  async getManyWithTotal({ skip, take }: { skip: number; take: number }): Promise<[ProjectSummaryDto[], number]> {
     const [items, total] = await this.prisma.$transaction([
       this.prisma.project.findMany({
         skip,
@@ -73,5 +82,64 @@ export class ProjectRepository {
     ])
 
     return [items, total]
+  }
+
+  async getOne(id: number): Promise<ProjectResponseDto> {
+    return await this.prisma.project.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        status: true,
+        title: true,
+        summary: true,
+        description: true,
+        thumbnail_url: true,
+        target_amount: true,
+        collected_amount: true,
+        created_by_id: true,
+        category_id: true,
+      },
+    })
+  }
+
+  async update(
+    id: number,
+    { title, summary, description, thumbnail_url, target_amount, category_id }: UpdateProjectRequestDto,
+  ): Promise<ProjectResponseDto> {
+    return await this.prisma.project.update({
+      where: { id },
+      data: { title, summary, description, thumbnail_url, target_amount, category_id },
+      select: {
+        id: true,
+        status: true,
+        title: true,
+        summary: true,
+        description: true,
+        thumbnail_url: true,
+        target_amount: true,
+        collected_amount: true,
+        created_by_id: true,
+        category_id: true,
+      },
+    })
+  }
+
+  async updateStatus(id: number, status: ProjectStatus): Promise<ProjectResponseDto> {
+    return await this.prisma.project.update({
+      where: { id },
+      data: { status },
+      select: {
+        id: true,
+        status: true,
+        title: true,
+        summary: true,
+        description: true,
+        thumbnail_url: true,
+        target_amount: true,
+        collected_amount: true,
+        created_by_id: true,
+        category_id: true,
+      },
+    })
   }
 }

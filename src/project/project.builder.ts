@@ -1,5 +1,6 @@
 import { ProjectStatus } from '@prisma/client'
 import { Project } from './domain/project'
+import { ProjectSchedule } from 'src/project-schedule/domain/project-schedule'
 
 /**
  * Project 빌더
@@ -13,6 +14,7 @@ export class ProjectBulider {
   private collected_amount: bigint
   private created_by_id: number
   private category_id?: number
+  private schedule: ProjectSchedule
 
   constructor(private status: ProjectStatus, private id?: number) {}
 
@@ -40,6 +42,11 @@ export class ProjectBulider {
     return this
   }
 
+  setSchedule(schedule: ProjectSchedule) {
+    this.schedule = schedule
+    return this
+  }
+
   build() {
     if (!this.created_by_id) {
       throw new Error('Creator Id is required')
@@ -56,6 +63,7 @@ export class ProjectBulider {
       collected_amount: this.collected_amount,
       created_by_id: this.created_by_id,
       category_id: this.category_id,
+      schedule: this.schedule,
     })
   }
 }

@@ -1,7 +1,7 @@
 import { Project } from './project'
 
-export class ProjectState {
+export abstract class ProjectState {
   constructor(public project: Project) {}
 
-  // TODO: 추상 메서드 정의
+  abstract isValidToReviewPending(): boolean
 }
