@@ -8,5 +8,6 @@ import { ProjectCategoryRepository } from './project-category.repository'
   imports: [PrismaModule],
   providers: [ProjectCategoryService, ProjectCategoryRepository],
   controllers: [ProjectCategoryController],
+  exports: [ProjectCategoryService],
 })
 export class ProjectCategoryModule {}

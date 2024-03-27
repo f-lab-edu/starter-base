@@ -90,24 +90,16 @@ model Project {
   @@map(name: "project")
 }
 
-/// 프로젝트 스케줄 타입 enum
-enum ProjectScheduleType {
-  FUNDING_START_DATE /// 펀딩 시작일
-  FUNDING_DUE_DATE /// 펀딩 마감일
-  PAYMENT_DUE_DATE /// 결제 마감일
-  PAYMENT_SETTLEMENT_DATE /// 정산일
-
-  @@map(name: "project_schedule_type")
-}
-
 /// 프로젝트 스케줄
 /// 하나의 프로젝트의 진행 일정에 관한 정보
 model ProjectSchedule {
-  id           Int                 @id @default(autoincrement())
-  type         ProjectScheduleType
-  scheduled_at DateTime /// 스케줄 일시
-  created_at   DateTime            @default(now())
-  updated_at   DateTime            @updatedAt
+  id                      Int      @id @default(autoincrement())
+  funding_start_date      DateTime /// 펀딩 시작일
+  funding_due_date        DateTime /// 펀딩 마감일
+  payment_due_date        DateTime /// 결제 마감일
+  payment_settlement_date DateTime /// 정산일
+  created_at              DateTime @default(now())
+  updated_at              DateTime @updatedAt
 
   project    Project @relation(fields: [project_id], references: [id]) /// 프로젝트
   project_id Int

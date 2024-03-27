@@ -1,3 +1,5 @@
 export * from './create-project.request.dto'
-export * from './create-project.response.dto'
+export * from './project.response.dto'
 export * from './project-summary.dto'
+export * from './update-proejct-status.request.dto'
+export * from './update-project.request.dto'
