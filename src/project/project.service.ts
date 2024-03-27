@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common'
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common'
 import { ProjectStatus } from '@prisma/client'
 import {
   CreateProjectRequestDto,
@@ -98,7 +98,7 @@ export class ProjectService {
 
     if (status === ProjectStatus.REVIEW_PENDING) {
       if (!project.state.isValidToReviewPending()) {
-        throw new Error('Project is not valid to review pending status')
+        throw new BadRequestException('Project is not valid to review pending status')
       }
       return await this.projectRepository.updateStatus(projectId, status)
     }
