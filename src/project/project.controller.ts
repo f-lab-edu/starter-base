@@ -37,21 +37,19 @@ export class ProjectController {
   }
 
   @Get(':projectId')
-  async getProject(@Param('projectId', ParseIntPipe) projectId: number) {
+  async getProject(@Param('projectId', ParseIntPipe) projectId: number): Promise<ProjectResponseDto> {
     return await this.projectService.getProject(projectId)
   }
 
   @Patch(':projectId')
   @UseGuards(JwtAuthGuard)
   async updateProject(@Param('projectId', ParseIntPipe) projectId: number, @Body() dto: UpdateProjectRequestDto) {
-    const project = await this.getProject(projectId)
-
     if (typeof dto.category_id === 'number') {
       const category = await this.categoryService.getCategory(dto.category_id)
-      return await this.projectService.updateProject(project.id, { ...dto, category_id: category.id })
+      return await this.projectService.updateProject(projectId, { ...dto, category_id: category.id })
     }
 
-    return await this.projectService.updateProject(project.id, dto)
+    return await this.projectService.updateProject(projectId, dto)
   }
 
   @Patch(':projectId/status')

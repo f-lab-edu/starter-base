@@ -18,7 +18,7 @@ export class ProjectBulider {
 
   constructor(private status: ProjectStatus, private id?: number) {}
 
-  setContents(title: string = '', summary: string = '', description: string = '', thumbnail_url: string = '') {
+  setContents(title = '', summary = '', description = '', thumbnail_url = '') {
     this.title = title
     this.summary = summary
     this.description = description
@@ -26,7 +26,7 @@ export class ProjectBulider {
     return this
   }
 
-  setAmount(target_amount: bigint = BigInt(0), collected_amount: bigint = BigInt(0)) {
+  setAmount(target_amount = BigInt(0), collected_amount = BigInt(0)) {
     this.target_amount = target_amount
     this.collected_amount = collected_amount
     return this

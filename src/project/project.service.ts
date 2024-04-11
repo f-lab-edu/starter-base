@@ -21,6 +21,9 @@ export class ProjectService {
     private readonly scheduleService: ProjectScheduleService,
   ) {}
 
+  /**
+   * 프로젝트 생성
+   */
   async createProject(
     { title, summary, description, thumbnail_url, target_amount, category_id }: CreateProjectRequestDto,
     created_by_id: Project['created_by_id'],
@@ -41,6 +44,9 @@ export class ProjectService {
     return await this.projectRepository.create(project)
   }
 
+  /**
+   * 프로젝트 목록 조회
+   */
   async getProjects(dto: PageRequestDto): Promise<PageResponseDto<ProjectSummaryDto>> {
     const { page, size } = dto
 
@@ -60,6 +66,9 @@ export class ProjectService {
     }
   }
 
+  /**
+   * 프로젝트 단일 조회
+   */
   async getProject(id: number): Promise<ProjectResponseDto> {
     if (!id) {
       throw new ConflictException('Required project id')
@@ -107,7 +116,16 @@ export class ProjectService {
     throw new Error('Method not implemented')
   }
 
+  /**
+   * 프로젝트 수정
+   */
   async updateProject(projectId: number, dto: UpdateProjectRequestDto) {
+    const project = await this.getProject(projectId)
+
+    if (project.status !== ProjectStatus.DRAFT && project.status !== ProjectStatus.REVIEW_FAILED) {
+      throw new BadRequestException('Only draft or review failed projects can be updated')
+    }
+
     return await this.projectRepository.update(projectId, dto)
   }
 }
