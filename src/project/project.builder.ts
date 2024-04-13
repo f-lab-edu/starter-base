@@ -1,5 +1,6 @@
 import { ProjectStatus } from '@prisma/client'
 import { Project } from './domain/project'
+import { ProjectSchedule } from 'src/project-schedule/domain/project-schedule'
 
 /**
  * Project 빌더
@@ -13,10 +14,11 @@ export class ProjectBulider {
   private collected_amount: bigint
   private created_by_id: number
   private category_id?: number
+  private schedule: ProjectSchedule
 
   constructor(private status: ProjectStatus, private id?: number) {}
 
-  setContents(title: string = '', summary: string = '', description: string = '', thumbnail_url: string = '') {
+  setContents(title = '', summary = '', description = '', thumbnail_url = '') {
     this.title = title
     this.summary = summary
     this.description = description
@@ -24,7 +26,7 @@ export class ProjectBulider {
     return this
   }
 
-  setAmount(target_amount: bigint = BigInt(0), collected_amount: bigint = BigInt(0)) {
+  setAmount(target_amount = BigInt(0), collected_amount = BigInt(0)) {
     this.target_amount = target_amount
     this.collected_amount = collected_amount
     return this
@@ -37,6 +39,11 @@ export class ProjectBulider {
 
   setCategoryId(category_id?: number) {
     this.category_id = category_id
+    return this
+  }
+
+  setSchedule(schedule: ProjectSchedule) {
+    this.schedule = schedule
     return this
   }
 
@@ -56,6 +63,7 @@ export class ProjectBulider {
       collected_amount: this.collected_amount,
       created_by_id: this.created_by_id,
       category_id: this.category_id,
+      schedule: this.schedule,
     })
   }
 }

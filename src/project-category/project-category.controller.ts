@@ -1,8 +1,10 @@
 import { Body, Controller, Post, UseGuards } from '@nestjs/common'
 import { ApiCreatedResponse, ApiTags } from '@nestjs/swagger'
 import { ProjectCategoryService } from './project-category.service'
-import { CreateCategoryRequestDto, CreateCategoryResponseDto } from './dto'
+import { CreateCategoryRequestDto, CategoryResponseDto } from './dto'
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'
+
+// TODO: 관리자만 write 가능
 
 @ApiTags('project-category')
 @Controller('project-category')
@@ -10,10 +12,9 @@ export class ProjectCategoryController {
   constructor(private readonly projectCategoryService: ProjectCategoryService) {}
 
   @Post()
-  @ApiCreatedResponse({ type: CreateCategoryResponseDto })
-  // FIXME: 어드민 권한의 사용자만 허용
+  @ApiCreatedResponse({ type: CategoryResponseDto })
   @UseGuards(JwtAuthGuard)
-  async createCategory(@Body() dto: CreateCategoryRequestDto): Promise<CreateCategoryResponseDto> {
+  async createCategory(@Body() dto: CreateCategoryRequestDto): Promise<CategoryResponseDto> {
     return await this.projectCategoryService.createCategory(dto)
   }
 }
