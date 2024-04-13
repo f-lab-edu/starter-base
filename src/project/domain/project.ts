@@ -5,6 +5,13 @@ import { BadRequestException } from '@nestjs/common'
 import { isURL } from 'class-validator'
 import { ProjectSchedule } from 'src/project-schedule/domain/project-schedule'
 
+const MIN_TITLE_LENGTH = 1
+const MAX_TITLE_LENGTH = 32
+const MIN_SUMMARY_LENGTH = 10
+const MAX_SUMMARY_LENGTH = 50
+const MIN_DESCRIPTION_LENGTH = 1
+const MIN_TARGET_AMOUNT = BigInt(500_000)
+
 /**
  * Project 도메인
  */
@@ -44,19 +51,19 @@ export class Project {
   }
 
   public isAllValid(): boolean {
-    if (this.title.length < 1 || this.title.length > 32) {
+    if (this.title.length < MIN_TITLE_LENGTH || this.title.length > MAX_TITLE_LENGTH) {
       throw new BadRequestException('Title must be between 1 and 32 characters')
     }
-    if (this.summary.length < 10 || this.summary.length > 50) {
+    if (this.summary.length < MIN_SUMMARY_LENGTH || this.summary.length > MAX_SUMMARY_LENGTH) {
       throw new BadRequestException('Summary must be between 10 and 50 characters')
     }
-    if (this.description.length < 1) {
+    if (this.description.length < MIN_DESCRIPTION_LENGTH) {
       throw new BadRequestException('Description is required')
     }
     if (!isURL(this.thumbnail_url)) {
       throw new BadRequestException('Thumbnail url is required')
     }
-    if (this.target_amount < BigInt(500_000)) {
+    if (this.target_amount < MIN_TARGET_AMOUNT) {
       throw new BadRequestException('Target amount must be over 500,000')
     }
     if (!this.category_id) {
