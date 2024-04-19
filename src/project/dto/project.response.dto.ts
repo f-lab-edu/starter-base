@@ -1,6 +1,22 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { ProjectStatus } from '@prisma/client'
 
+class ProjectCategory {
+  @ApiProperty()
+  id: number
+
+  @ApiProperty()
+  name: string
+}
+
+class User {
+  @ApiProperty()
+  id: number
+
+  @ApiProperty()
+  nickname: string
+}
+
 export class ProjectResponseDto {
   @ApiProperty()
   id: number
@@ -27,8 +43,8 @@ export class ProjectResponseDto {
   collected_amount: bigint
 
   @ApiProperty()
-  created_by_id: number
+  created_by: User
 
   @ApiProperty({ nullable: true })
-  category_id: number | null
+  category: ProjectCategory | null
 }

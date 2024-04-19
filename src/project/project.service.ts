@@ -22,15 +22,15 @@ export class ProjectService {
   ) {}
 
   async createProjectDomain({ projectId }: { projectId: number }): Promise<Project> {
-    const { id, status, title, summary, description, thumbnail_url, target_amount, created_by_id, category_id } =
+    const { id, status, title, summary, description, thumbnail_url, target_amount, created_by, category } =
       await this.getProject(projectId)
     const schedule = await this.scheduleService.createScheduleDomain({ projectId })
 
     return new ProjectBuilder(status, id)
       .setContents(title, summary, description, thumbnail_url)
       .setAmount(target_amount)
-      .setCreatedById(created_by_id)
-      .setCategoryId(category_id)
+      .setCreatedById(created_by.id)
+      .setCategoryId(category?.id)
       .setSchedule(schedule)
       .build()
   }

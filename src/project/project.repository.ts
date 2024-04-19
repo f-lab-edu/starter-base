@@ -42,7 +42,7 @@ export class ProjectRepository {
       category_id: category_id,
     }
 
-    const newProject = await this.prisma.project.create({
+    return this.prisma.project.create({
       data: project,
       select: {
         id: true,
@@ -53,12 +53,10 @@ export class ProjectRepository {
         thumbnail_url: true,
         target_amount: true,
         collected_amount: true,
-        created_by_id: true,
-        category_id: true,
+        created_by: { select: { id: true, nickname: true } },
+        category: { select: { id: true, name: true } },
       },
     })
-
-    return newProject
   }
 
   async getManyWithTotal({ skip, take }: { skip: number; take: number }): Promise<[ProjectSummaryDto[], number]> {
@@ -85,7 +83,7 @@ export class ProjectRepository {
   }
 
   async getOne(id: number): Promise<ProjectResponseDto> {
-    return await this.prisma.project.findUnique({
+    return this.prisma.project.findUnique({
       where: { id },
       select: {
         id: true,
@@ -96,8 +94,8 @@ export class ProjectRepository {
         thumbnail_url: true,
         target_amount: true,
         collected_amount: true,
-        created_by_id: true,
-        category_id: true,
+        created_by: { select: { id: true, nickname: true } },
+        category: { select: { id: true, name: true } },
       },
     })
   }
@@ -106,7 +104,7 @@ export class ProjectRepository {
     id: number,
     { title, summary, description, thumbnail_url, target_amount, category_id }: UpdateProjectRequestDto,
   ): Promise<ProjectResponseDto> {
-    return await this.prisma.project.update({
+    return this.prisma.project.update({
       where: { id },
       data: { title, summary, description, thumbnail_url, target_amount, category_id },
       select: {
@@ -118,14 +116,14 @@ export class ProjectRepository {
         thumbnail_url: true,
         target_amount: true,
         collected_amount: true,
-        created_by_id: true,
-        category_id: true,
+        created_by: { select: { id: true, nickname: true } },
+        category: { select: { id: true, name: true } },
       },
     })
   }
 
   async updateStatus(id: number, status: ProjectStatus): Promise<ProjectResponseDto> {
-    return await this.prisma.project.update({
+    return this.prisma.project.update({
       where: { id },
       data: { status },
       select: {
@@ -137,8 +135,8 @@ export class ProjectRepository {
         thumbnail_url: true,
         target_amount: true,
         collected_amount: true,
-        created_by_id: true,
-        category_id: true,
+        created_by: { select: { id: true, nickname: true } },
+        category: { select: { id: true, name: true } },
       },
     })
   }
