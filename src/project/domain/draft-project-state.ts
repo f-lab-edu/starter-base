@@ -20,11 +20,7 @@ export class DraftProjectState extends ProjectState {
     return true
   }
 
-  isValidToReviewApproved(): boolean {
-    throw new Error('Not supported method')
-  }
-
-  isValidToReviewRejected(): boolean {
+  isValidToReview(): boolean {
     throw new Error('Not supported method')
   }
 }
