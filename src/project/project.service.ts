@@ -131,19 +131,14 @@ export class ProjectService {
         break
       }
 
-      case ProjectStatus.REVIEW_APPROVED: {
-        if (!project.state.isValidToReviewApproved()) {
-          throw new BadRequestException('Project is not valid to review approved status')
+      case ProjectStatus.REVIEW_APPROVED:
+      case ProjectStatus.REVIEW_REJECTED: {
+        if (!project.state.isValidToReview()) {
+          throw new BadRequestException('Project is not valid to review approved or rejected status')
         }
         break
       }
 
-      case ProjectStatus.REVIEW_REJECTED: {
-        if (!project.state.isValidToReviewRejected()) {
-          throw new BadRequestException('Project is not valid to review rejected status')
-        }
-        break
-      }
       // TODO: 구현
       default:
         throw new Error('Method not implemented')

@@ -12,21 +12,9 @@ export class ReviewPendingProjectState extends ProjectState {
     throw new Error('Not supported method')
   }
 
-  isValidToReviewApproved(): boolean {
+  isValidToReview(): boolean {
     if (this.project.status !== ProjectStatus.REVIEW_PENDING) {
-      throw new BadRequestException('Unsupported status for switching to review approved')
-    }
-
-    if (!this.isValid()) {
-      throw new BadRequestException('All elements of the project must be valid')
-    }
-
-    return true
-  }
-
-  isValidToReviewRejected(): boolean {
-    if (this.project.status !== ProjectStatus.REVIEW_PENDING) {
-      throw new BadRequestException('Unsupported status for switching to review approved')
+      throw new BadRequestException('Unsupported status for switching to review approved or rejected')
     }
 
     if (!this.isValid()) {

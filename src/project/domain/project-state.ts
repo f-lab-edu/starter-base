@@ -18,6 +18,5 @@ export abstract class ProjectState {
   }
 
   abstract isValidToReviewPending(): boolean
-  abstract isValidToReviewApproved(): boolean
-  abstract isValidToReviewRejected(): boolean
+  abstract isValidToReview(): boolean
 }
