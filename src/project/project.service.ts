@@ -1,4 +1,10 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common'
+import {
+  BadRequestException,
+  ConflictException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common'
 import { ProjectStatus } from '@prisma/client'
 import {
   CreateProjectRequestDto,
@@ -20,6 +26,20 @@ export class ProjectService {
     private readonly projectRepository: ProjectRepository,
     private readonly scheduleService: ProjectScheduleService,
   ) {}
+
+  async checkIsCreator({ projectId, userId }: { projectId: number; userId: number }): Promise<void> {
+    const project = await this.projectRepository.getCreatorId(projectId)
+
+    if (!project) {
+      throw new NotFoundException('Not found project')
+    }
+
+    if (project.created_by_id !== userId) {
+      throw new ForbiddenException('Only creator can be access')
+    }
+
+    return
+  }
 
   async createProjectDomain({ projectId }: { projectId: number }): Promise<Project> {
     const { id, status, title, summary, description, thumbnail_url, target_amount, created_by, category } =

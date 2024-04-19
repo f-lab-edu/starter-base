@@ -62,7 +62,10 @@ export class ProjectController {
   async updateProject(
     @Param('projectId', ParseIntPipe) projectId: number,
     @Body() dto: UpdateProjectRequestDto,
+    @Req() req: Request,
   ): Promise<ProjectResponseDto> {
+    await this.projectService.checkIsCreator({ projectId, userId: req.user.userId })
+
     if (typeof dto.category_id === 'number') {
       const category = await this.categoryService.getCategory(dto.category_id)
       return await this.projectService.updateProject(projectId, { ...dto, category_id: category.id })
@@ -80,7 +83,10 @@ export class ProjectController {
   async updateProjectStatus(
     @Param('projectId', ParseIntPipe) projectId: number,
     @Query() { status }: UpdateProjectStatusRequestDto,
+    @Req() req: Request,
   ): Promise<ProjectResponseDto> {
+    await this.projectService.checkIsCreator({ projectId, userId: req.user.userId })
+
     return await this.projectService.updateProjectStatus({ projectId, status })
   }
 

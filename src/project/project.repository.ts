@@ -100,6 +100,13 @@ export class ProjectRepository {
     })
   }
 
+  async getCreatorId(projectId: number) {
+    return this.prisma.project.findUnique({
+      where: { id: projectId },
+      select: { created_by_id: true },
+    })
+  }
+
   async update(
     id: number,
     { title, summary, description, thumbnail_url, target_amount, category_id }: UpdateProjectRequestDto,
