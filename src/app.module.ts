@@ -9,6 +9,7 @@ import { ProjectCategoryModule } from './project-category/project-category.modul
 import { ProjectModule } from './project/project.module'
 import { LoggerMiddleware } from './common/logger'
 import { configuration } from './common/config/env'
+import { ProjectRewordModule } from './project-reword/project-reword.module'
 import { ProjectScheduleModule } from './project-schedule/project-schedule.module'
 
 @Module({
@@ -23,6 +24,7 @@ import { ProjectScheduleModule } from './project-schedule/project-schedule.modul
     FileModule,
     ProjectCategoryModule,
     ProjectModule,
+    ProjectRewordModule,
     ProjectScheduleModule,
   ],
   controllers: [AppController],
