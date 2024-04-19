@@ -37,8 +37,6 @@ export class ProjectService {
     if (project.created_by_id !== userId) {
       throw new ForbiddenException('Only creator can be access')
     }
-
-    return
   }
 
   async createProjectDomain({ projectId }: { projectId: number }): Promise<Project> {
