@@ -3,14 +3,18 @@ import { Project } from './project'
 import { ProjectState } from './project-state'
 import { BadRequestException } from '@nestjs/common'
 
-export class DraftProjectState extends ProjectState {
+export class ReviewPendingProjectState extends ProjectState {
   constructor(project: Project) {
     super(project)
   }
 
   isValidToReviewPending(): boolean {
-    if (this.project.status !== ProjectStatus.DRAFT && this.project.status !== ProjectStatus.REVIEW_REJECTED) {
-      throw new BadRequestException('Unsupported status for switching to review pending')
+    throw new Error('Not supported method')
+  }
+
+  isValidToReview(): boolean {
+    if (this.project.status !== ProjectStatus.REVIEW_PENDING) {
+      throw new BadRequestException('Unsupported status for switching to review approved or rejected')
     }
 
     if (!this.isValid()) {
@@ -18,9 +22,5 @@ export class DraftProjectState extends ProjectState {
     }
 
     return true
-  }
-
-  isValidToReview(): boolean {
-    throw new Error('Not supported method')
   }
 }

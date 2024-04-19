@@ -1,4 +1,10 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common'
+import {
+  BadRequestException,
+  ConflictException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common'
 import { ProjectStatus } from '@prisma/client'
 import {
   CreateProjectRequestDto,
@@ -8,11 +14,11 @@ import {
   UpdateProjectStatusRequestDto,
 } from './dto'
 import { ProjectRepository } from './project.repository'
-import { ProjectBulider } from './project.builder'
+import { ProjectBuilder } from './project.builder'
 import { Project } from './domain/project'
 import { PageRequestDto, PageResponseDto } from 'src/common/pagination'
 import { ProjectScheduleService } from 'src/project-schedule/project-schedule.service'
-import { ProjectSchedule } from 'src/project-schedule/domain/project-schedule'
+import { ReviewProjectRequestDto } from './dto/review-project.request.dto'
 
 @Injectable()
 export class ProjectService {
@@ -20,6 +26,32 @@ export class ProjectService {
     private readonly projectRepository: ProjectRepository,
     private readonly scheduleService: ProjectScheduleService,
   ) {}
+
+  async checkIsCreator({ projectId, userId }: { projectId: number; userId: number }): Promise<void> {
+    const project = await this.projectRepository.getCreatorId(projectId)
+
+    if (!project) {
+      throw new NotFoundException('Not found project')
+    }
+
+    if (project.created_by_id !== userId) {
+      throw new ForbiddenException('Only creator can be access')
+    }
+  }
+
+  async createProjectDomain({ projectId }: { projectId: number }): Promise<Project> {
+    const { id, status, title, summary, description, thumbnail_url, target_amount, created_by, category } =
+      await this.getProject(projectId)
+    const schedule = await this.scheduleService.createScheduleDomain({ projectId })
+
+    return new ProjectBuilder(status, id)
+      .setContents(title, summary, description, thumbnail_url)
+      .setAmount(target_amount)
+      .setCreatedById(created_by.id)
+      .setCategoryId(category?.id)
+      .setSchedule(schedule)
+      .build()
+  }
 
   /**
    * 프로젝트 생성
@@ -34,7 +66,7 @@ export class ProjectService {
       throw new ConflictException('A maximum of 5 draft projects can be created')
     }
 
-    const project = new ProjectBulider(ProjectStatus.DRAFT)
+    const project = new ProjectBuilder(ProjectStatus.DRAFT)
       .setContents(title, summary, description, thumbnail_url)
       .setAmount(target_amount)
       .setCreatedById(created_by_id)
@@ -87,33 +119,30 @@ export class ProjectService {
    * 프로젝트 상태 변경
    */
   async updateProjectStatus({ projectId, status }: { projectId: number } & UpdateProjectStatusRequestDto) {
-    const _project = await this.getProject(projectId)
-    const _schedule = await this.scheduleService.getSchedule({ project_id: projectId })
-    const schedule = new ProjectSchedule(
-      _schedule.id,
-      _schedule.funding_start_date,
-      _schedule.funding_due_date,
-      _schedule.payment_due_date,
-      _schedule.payment_settlement_date,
-      _schedule.project_id,
-    )
-    const project = new ProjectBulider(_project.status, _project.id)
-      .setContents(_project.title, _project.summary, _project.description, _project.thumbnail_url)
-      .setAmount(_project.target_amount)
-      .setCreatedById(_project.created_by_id)
-      .setCategoryId(_project.category_id)
-      .setSchedule(schedule)
-      .build()
+    const project = await this.createProjectDomain({ projectId })
 
-    if (status === ProjectStatus.REVIEW_PENDING) {
-      if (!project.state.isValidToReviewPending()) {
-        throw new BadRequestException('Project is not valid to review pending status')
+    switch (status) {
+      case ProjectStatus.REVIEW_PENDING: {
+        if (!project.state.isValidToReviewPending()) {
+          throw new BadRequestException('Project is not valid to review pending status')
+        }
+        break
       }
-      return await this.projectRepository.updateStatus(projectId, status)
+
+      case ProjectStatus.REVIEW_APPROVED:
+      case ProjectStatus.REVIEW_REJECTED: {
+        if (!project.state.isValidToReview()) {
+          throw new BadRequestException('Project is not valid to review approved or rejected status')
+        }
+        break
+      }
+
+      // TODO: 구현
+      default:
+        throw new Error('Method not implemented')
     }
 
-    // TODO: 구현
-    throw new Error('Method not implemented')
+    return await this.projectRepository.updateStatus(projectId, status)
   }
 
   /**
@@ -122,10 +151,23 @@ export class ProjectService {
   async updateProject(projectId: number, dto: UpdateProjectRequestDto) {
     const project = await this.getProject(projectId)
 
-    if (project.status !== ProjectStatus.DRAFT && project.status !== ProjectStatus.REVIEW_FAILED) {
-      throw new BadRequestException('Only draft or review failed projects can be updated')
+    if (project.status !== ProjectStatus.DRAFT && project.status !== ProjectStatus.REVIEW_REJECTED) {
+      throw new BadRequestException('Only draft or review rejected projects can be updated')
     }
 
     return await this.projectRepository.update(projectId, dto)
+  }
+
+  /**
+   * 프로젝트 심사 승인 또는 거절
+   */
+  async reviewProject(projectId: number, { result }: ReviewProjectRequestDto) {
+    const project = await this.getProject(projectId)
+
+    if (project.status !== ProjectStatus.REVIEW_PENDING) {
+      throw new BadRequestException('Only projects in review pending status can be reviewed')
+    }
+
+    return await this.updateProjectStatus({ projectId, status: result })
   }
 }

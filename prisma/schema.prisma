@@ -49,17 +49,17 @@ model ProjectCategory {
 
 /// 프로젝트 상태
 enum ProjectStatus {
-  DRAFT /// 프로젝트 심사 제출 전
+  DRAFT /// 작성중
   REVIEW_PENDING /// 심사 대기
-  REVIEW_PASSED /// 심사 통과
-  REVIEW_FAILED /// 심사 불통과
+  REVIEW_APPROVED /// 심사 승인
+  REVIEW_REJECTED /// 심사 반려
   PROJECT_CANCELED /// 프로젝트 취소
+  TO_BE_RELEASED /// 공개 예정
   FUNDING_OPENED /// 펀딩 오픈(진행중)
   FUNDING_SUCCESS /// 펀딩 성사
   FUNDING_FAILURE /// 펀딩 무산
   FUNDING_CANCELED /// 펀딩 취소
   SETTLEMENT_COMPLETED /// 정산 완료
-  PROJECT_HALTED /// 프로젝트 중단
 
   @@map(name: "project_status")
 }
@@ -128,6 +128,7 @@ model ProjectReword {
 }
 
 // TODO: 결제 정보 추가해야 함
+// TODO: 후원 상태 추가해야 함
 /// 프로젝트 후원
 /// 사용자가 특정 프로젝트를 후원할 경우 생성되는 정보
 model Sponsorship {
