@@ -2,10 +2,24 @@ import { ConflictException, Injectable, NotFoundException } from '@nestjs/common
 import { ProjectScheduleRepository } from './project-schedule.repository'
 import { CreateScheduleRequestDto, ScheduleResponseDto } from './dto'
 import * as dayjs from 'dayjs'
+import { ProjectSchedule } from './domain/project-schedule'
 
 @Injectable()
 export class ProjectScheduleService {
   constructor(private readonly scheduleRepository: ProjectScheduleRepository) {}
+
+  async createScheduleDomain({ projectId }): Promise<ProjectSchedule> {
+    const { id, funding_start_date, funding_due_date, payment_due_date, payment_settlement_date, project_id } =
+      await this.getSchedule({ project_id: projectId })
+    return new ProjectSchedule(
+      id,
+      funding_start_date,
+      funding_due_date,
+      payment_due_date,
+      payment_settlement_date,
+      project_id,
+    )
+  }
 
   async createSchedule(projectId: number, dto: CreateScheduleRequestDto): Promise<ScheduleResponseDto> {
     return await this.scheduleRepository.create(projectId, {

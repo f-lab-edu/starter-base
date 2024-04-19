@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Param, ParseIntPipe, Patch, Post } from '@nestjs/common'
+import { Body, Controller, Param, ParseIntPipe, Patch, Post } from '@nestjs/common'
 import { ApiCreatedResponse, ApiTags } from '@nestjs/swagger'
 import { ProjectScheduleService } from './project-schedule.service'
 import { CreateScheduleRequestDto, ScheduleResponseDto } from './dto'
@@ -21,7 +21,4 @@ export class ProjectScheduleController {
 
   @Patch('/project/schedule/:scheduleId')
   async updateSchedule() {}
-
-  @Delete('/project/schedule/:scheduleId')
-  async deleteSchedule() {}
 }

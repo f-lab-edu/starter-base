@@ -5,7 +5,7 @@ import { ProjectSchedule } from 'src/project-schedule/domain/project-schedule'
 /**
  * Project 빌더
  */
-export class ProjectBulider {
+export class ProjectBuilder {
   private title: string
   private summary: string
   private description: string

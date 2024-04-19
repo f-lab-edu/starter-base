@@ -9,18 +9,22 @@ export class DraftProjectState extends ProjectState {
   }
 
   isValidToReviewPending(): boolean {
-    if (this.project.status !== ProjectStatus.DRAFT && this.project.status !== ProjectStatus.REVIEW_FAILED) {
-      throw new Error('Unsupported status for switching to review pending')
+    if (this.project.status !== ProjectStatus.DRAFT && this.project.status !== ProjectStatus.REVIEW_REJECTED) {
+      throw new BadRequestException('Unsupported status for switching to review pending')
     }
 
-    if (!this.project.isAllValid()) {
-      throw new BadRequestException('Project must be valid')
+    if (!this.isValid()) {
+      throw new BadRequestException('All elements of the project must be valid')
     }
-    if (!this.project.schedule?.isAllValid()) {
-      throw new BadRequestException('Project schedules must be valid')
-    }
-    // TODO: reword 검사
 
     return true
+  }
+
+  isValidToReviewApproved(): boolean {
+    throw new Error('Not supported method')
+  }
+
+  isValidToReviewRejected(): boolean {
+    throw new Error('Not supported method')
   }
 }

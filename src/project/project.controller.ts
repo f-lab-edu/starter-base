@@ -12,6 +12,8 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'
 import { ProjectService } from './project.service'
 import { ApiPaginatedResponse, PageRequestDto, PageResponseDto } from 'src/common/pagination'
 import { ProjectCategoryService } from 'src/project-category/project-category.service'
+import { RolesGuard } from '../users/roles.guard'
+import { ReviewProjectRequestDto } from './dto/review-project.request.dto'
 
 // TODO: 창작자만 write 가능
 
@@ -23,6 +25,9 @@ export class ProjectController {
     private readonly categoryService: ProjectCategoryService,
   ) {}
 
+  /**
+   * 프로젝트 생성
+   */
   @Post()
   @ApiCreatedResponse({ type: ProjectResponseDto })
   @UseGuards(JwtAuthGuard)
@@ -30,17 +35,26 @@ export class ProjectController {
     return await this.projectService.createProject(dto, req.user.userId)
   }
 
+  /**
+   * 프로젝트 리스트 조회
+   */
   @Get()
   @ApiPaginatedResponse(ProjectSummaryDto)
   async getProjects(@Query() dto: PageRequestDto): Promise<PageResponseDto<ProjectSummaryDto>> {
     return await this.projectService.getProjects(dto)
   }
 
+  /**
+   * 프로젝트 단일 조회
+   */
   @Get(':projectId')
   async getProject(@Param('projectId', ParseIntPipe) projectId: number): Promise<ProjectResponseDto> {
     return await this.projectService.getProject(projectId)
   }
 
+  /**
+   * 프로젝트 수정
+   */
   @Patch(':projectId')
   @UseGuards(JwtAuthGuard)
   async updateProject(@Param('projectId', ParseIntPipe) projectId: number, @Body() dto: UpdateProjectRequestDto) {
@@ -52,6 +66,9 @@ export class ProjectController {
     return await this.projectService.updateProject(projectId, dto)
   }
 
+  /**
+   * 프로젝트 상태 변경
+   */
   @Patch(':projectId/status')
   @ApiOkResponse({ type: ProjectResponseDto })
   @UseGuards(JwtAuthGuard)
@@ -60,5 +77,18 @@ export class ProjectController {
     @Query() { status }: UpdateProjectStatusRequestDto,
   ): Promise<ProjectResponseDto> {
     return await this.projectService.updateProjectStatus({ projectId, status })
+  }
+
+  /**
+   * 프로젝트 심사(승인 또는 거절)
+   */
+  @Patch(':projectId/review')
+  @ApiOkResponse({ type: ProjectResponseDto })
+  @UseGuards(JwtAuthGuard, RolesGuard('ADMIN'))
+  async reviewProject(
+    @Param('projectId', ParseIntPipe) projectId: number,
+    @Query() { result }: ReviewProjectRequestDto,
+  ): Promise<ProjectResponseDto> {
+    return await this.projectService.reviewProject(projectId, { result })
   }
 }
