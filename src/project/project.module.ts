@@ -10,5 +10,6 @@ import { ProjectScheduleModule } from 'src/project-schedule/project-schedule.mod
   imports: [PrismaModule, ProjectCategoryModule, ProjectScheduleModule],
   controllers: [ProjectController],
   providers: [ProjectService, ProjectRepository],
+  exports: [ProjectService],
 })
 export class ProjectModule {}

@@ -1,15 +1,17 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, UseGuards } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Req, UseGuards } from '@nestjs/common'
+import { Request } from 'express'
 import { ApiCreatedResponse, ApiTags } from '@nestjs/swagger'
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'
 import { ProjectRewordService } from './project-reword.service'
 import { ProjectRewordResponseDto, CreateProjectRewordRequestDto } from './dto'
+import { ProjectService } from '../project/project.service'
 
 // TODO: 창작자만 write 가능
 
 @ApiTags('project-reword')
 @Controller()
 export class ProjectRewordController {
-  constructor(private readonly rewordService: ProjectRewordService) {}
+  constructor(private readonly rewordService: ProjectRewordService, private readonly projectService: ProjectService) {}
 
   /**
    * 프로젝트 선물 생성
@@ -20,8 +22,10 @@ export class ProjectRewordController {
   async createReword(
     @Param('projectId', ParseIntPipe) projectId: number,
     @Body() dto: CreateProjectRewordRequestDto,
+    @Req() req: Request,
   ): Promise<ProjectRewordResponseDto> {
-    // TODO: 해당 프로젝트를 생성한 user 인지 체크
+    await this.projectService.checkIsCreator({ projectId, userId: req.user.userId })
+
     return this.rewordService.createReword(projectId, dto)
   }
 
