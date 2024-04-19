@@ -12,8 +12,6 @@ export const RolesGuard = (...roles: UserRole[]): Type<CanActivate> => {
       const request = context.switchToHttp().getRequest()
       const user: JwtDto = request.user
 
-      console.log(request.user)
-
       return user && roles.includes(user.userRole)
     }
   }
