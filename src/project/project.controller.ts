@@ -48,6 +48,7 @@ export class ProjectController {
    * 프로젝트 단일 조회
    */
   @Get(':projectId')
+  @ApiOkResponse({ type: ProjectResponseDto })
   async getProject(@Param('projectId', ParseIntPipe) projectId: number): Promise<ProjectResponseDto> {
     return await this.projectService.getProject(projectId)
   }
@@ -57,7 +58,11 @@ export class ProjectController {
    */
   @Patch(':projectId')
   @UseGuards(JwtAuthGuard)
-  async updateProject(@Param('projectId', ParseIntPipe) projectId: number, @Body() dto: UpdateProjectRequestDto) {
+  @ApiOkResponse({ type: ProjectResponseDto })
+  async updateProject(
+    @Param('projectId', ParseIntPipe) projectId: number,
+    @Body() dto: UpdateProjectRequestDto,
+  ): Promise<ProjectResponseDto> {
     if (typeof dto.category_id === 'number') {
       const category = await this.categoryService.getCategory(dto.category_id)
       return await this.projectService.updateProject(projectId, { ...dto, category_id: category.id })
@@ -70,8 +75,8 @@ export class ProjectController {
    * 프로젝트 상태 변경
    */
   @Patch(':projectId/status')
-  @ApiOkResponse({ type: ProjectResponseDto })
   @UseGuards(JwtAuthGuard)
+  @ApiOkResponse({ type: ProjectResponseDto })
   async updateProjectStatus(
     @Param('projectId', ParseIntPipe) projectId: number,
     @Query() { status }: UpdateProjectStatusRequestDto,
@@ -83,8 +88,8 @@ export class ProjectController {
    * 프로젝트 심사(승인 또는 거절)
    */
   @Patch(':projectId/review')
-  @ApiOkResponse({ type: ProjectResponseDto })
   @UseGuards(JwtAuthGuard, RolesGuard('ADMIN'))
+  @ApiOkResponse({ type: ProjectResponseDto })
   async reviewProject(
     @Param('projectId', ParseIntPipe) projectId: number,
     @Query() { result }: ReviewProjectRequestDto,
