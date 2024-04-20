@@ -13,11 +13,11 @@ import {
   UseGuards,
 } from '@nestjs/common'
 import { Request } from 'express'
-import { ApiCreatedResponse, ApiTags } from '@nestjs/swagger'
+import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger'
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'
 import { ProjectRewordService } from './project-reword.service'
 import { ProjectRewordResponseDto, CreateProjectRewordRequestDto, UpdateProjectRewordRequestDto } from './dto'
-import { ApiPaginatedResponse, PageRequestDto } from '../common/pagination'
+import { ApiPaginatedResponse, PageRequestDto, PageResponseDto } from '../common/pagination'
 import { ProjectService } from '../project/project.service'
 
 // TODO: 창작자만 write 가능
@@ -48,7 +48,10 @@ export class ProjectRewordController {
    */
   @Get('/project/:projectId/reword')
   @ApiPaginatedResponse(ProjectRewordResponseDto)
-  async getRewords(@Param('projectId', ParseIntPipe) projectId: number, @Query() dto: PageRequestDto) {
+  async getRewords(
+    @Param('projectId', ParseIntPipe) projectId: number,
+    @Query() dto: PageRequestDto,
+  ): Promise<PageResponseDto<ProjectRewordResponseDto>> {
     return await this.rewordService.getRewords(projectId, dto)
   }
 
@@ -56,12 +59,13 @@ export class ProjectRewordController {
    * 프로젝트 선물 수정
    */
   @Patch('/project/reword/:rewordId')
+  @ApiOkResponse({ type: ProjectRewordResponseDto })
   @UseGuards(JwtAuthGuard)
   async updateReword(
     @Param('rewordId', ParseIntPipe) rewordId: number,
     @Body() dto: UpdateProjectRewordRequestDto,
     @Req() req: Request,
-  ) {
+  ): Promise<ProjectRewordResponseDto> {
     const reword = await this.rewordService.getRewordById(rewordId)
 
     if (!reword) {
@@ -78,6 +82,18 @@ export class ProjectRewordController {
    * 프로젝트 선물 삭제
    */
   @Delete('/project/reword/:rewordId')
+  @ApiOkResponse()
   @UseGuards(JwtAuthGuard)
-  async deleteReword() {}
+  async deleteReword(@Param('rewordId', ParseIntPipe) rewordId: number, @Req() req: Request): Promise<void> {
+    const reword = await this.rewordService.getRewordById(rewordId)
+
+    if (!reword) {
+      throw new NotFoundException('Not found project reword')
+    }
+
+    await this.projectService.checkIsCreator({ projectId: reword.project_id, userId: req.user.userId })
+    await this.projectService.checkIsUpdatable({ projectId: reword.project_id })
+
+    await this.rewordService.deleteReword(rewordId)
+  }
 }

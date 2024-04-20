@@ -39,4 +39,8 @@ export class ProjectRewordService {
   async updateReword(rewordId: number, dto: UpdateProjectRewordRequestDto): Promise<ProjectRewordResponseDto> {
     return await this.rewordRepository.update(rewordId, dto)
   }
+
+  async deleteReword(rewordId: number): Promise<void> {
+    return await this.rewordRepository.delete(rewordId)
+  }
 }

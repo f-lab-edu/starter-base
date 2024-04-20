@@ -87,4 +87,8 @@ export class ProjectRewordRepository {
       },
     })
   }
+
+  async delete(rewordId: number): Promise<void> {
+    await this.prisma.projectReword.delete({ where: { id: rewordId } })
+  }
 }
