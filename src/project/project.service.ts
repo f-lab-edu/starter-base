@@ -21,6 +21,9 @@ export class ProjectService {
     private readonly scheduleService: ProjectScheduleService,
   ) {}
 
+  /**
+   * 프로젝트의 창작자인지 검사하는 함수
+   */
   async checkIsCreator({ projectId, userId }: { projectId: number; userId: number }): Promise<void> {
     const project = await this.projectRepository.getCreatorId(projectId)
 
@@ -30,6 +33,17 @@ export class ProjectService {
 
     if (project.created_by_id !== userId) {
       throw new ForbiddenException('Only creator can be access')
+    }
+  }
+
+  /**
+   * 프로젝트가 수정 가능한 상태인지 검사하는 함수
+   */
+  async checkIsUpdatable({ projectId }: { projectId: number }): Promise<void> {
+    const project = await this.getProject(projectId)
+
+    if (project.status !== ProjectStatus.DRAFT && project.status !== ProjectStatus.REVIEW_REJECTED) {
+      throw new BadRequestException('Only draft or review rejected projects can be updated')
     }
   }
 
@@ -143,12 +157,6 @@ export class ProjectService {
    * 프로젝트 수정
    */
   async updateProject(projectId: number, dto: WriteProjectRequestDto) {
-    const project = await this.getProject(projectId)
-
-    if (project.status !== ProjectStatus.DRAFT && project.status !== ProjectStatus.REVIEW_REJECTED) {
-      throw new BadRequestException('Only draft or review rejected projects can be updated')
-    }
-
     return await this.projectRepository.update(projectId, dto)
   }
 

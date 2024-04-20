@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { CreateProjectRewordRequestDto, ProjectRewordResponseDto } from './dto'
+import { CreateProjectRewordRequestDto, ProjectRewordResponseDto, UpdateProjectRewordRequestDto } from './dto'
 import { ProjectRewordRepository } from './project-reword.repository'
 import { PageRequestDto, PageResponseDto } from '../common/pagination'
 
@@ -30,5 +30,13 @@ export class ProjectRewordService {
       size,
       items,
     }
+  }
+
+  async getRewordById(rewordId: number): Promise<ProjectRewordResponseDto> {
+    return await this.rewordRepository.getOneById(rewordId)
+  }
+
+  async updateReword(rewordId: number, dto: UpdateProjectRewordRequestDto): Promise<ProjectRewordResponseDto> {
+    return await this.rewordRepository.update(rewordId, dto)
   }
 }

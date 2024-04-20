@@ -1,5 +1,5 @@
 import { PrismaService } from '../prisma/prisma.service'
-import { CreateProjectRewordRequestDto, ProjectRewordResponseDto } from './dto'
+import { CreateProjectRewordRequestDto, ProjectRewordResponseDto, UpdateProjectRewordRequestDto } from './dto'
 import { Injectable } from '@nestjs/common'
 
 @Injectable()
@@ -52,5 +52,39 @@ export class ProjectRewordRepository {
     ])
 
     return [items, total]
+  }
+
+  async getOneById(rewordId: number): Promise<ProjectRewordResponseDto> {
+    return this.prisma.projectReword.findUnique({
+      where: { id: rewordId },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        expected_delivery_date: true,
+        amount: true,
+        limit: true,
+        project_id: true,
+      },
+    })
+  }
+
+  async update(
+    rewordId: number,
+    { title, description, expected_delivery_date, amount, limit }: UpdateProjectRewordRequestDto,
+  ): Promise<ProjectRewordResponseDto> {
+    return this.prisma.projectReword.update({
+      where: { id: rewordId },
+      data: { title, description, expected_delivery_date, amount, limit },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        expected_delivery_date: true,
+        amount: true,
+        limit: true,
+        project_id: true,
+      },
+    })
   }
 }

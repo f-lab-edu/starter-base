@@ -59,6 +59,7 @@ export class ProjectController {
     @Req() req: Request,
   ): Promise<ProjectResponseDto> {
     await this.projectService.checkIsCreator({ projectId, userId: req.user.userId })
+    await this.projectService.checkIsUpdatable({ projectId })
 
     if (typeof dto.category_id === 'number') {
       const category = await this.categoryService.getCategory(dto.category_id)
