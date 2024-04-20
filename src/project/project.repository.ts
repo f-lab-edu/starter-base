@@ -2,7 +2,7 @@ import { Project as ProjectScheme, ProjectStatus } from '@prisma/client'
 import { Injectable, InternalServerErrorException } from '@nestjs/common'
 import { PrismaService } from 'src/prisma/prisma.service'
 import { Project } from './domain/project'
-import { ProjectResponseDto, ProjectSummaryDto, UpdateProjectRequestDto } from './dto'
+import { ProjectResponseDto, ProjectSummaryDto, WriteProjectRequestDto } from './dto'
 
 @Injectable()
 export class ProjectRepository {
@@ -109,7 +109,7 @@ export class ProjectRepository {
 
   async update(
     id: number,
-    { title, summary, description, thumbnail_url, target_amount, category_id }: UpdateProjectRequestDto,
+    { title, summary, description, thumbnail_url, target_amount, category_id }: WriteProjectRequestDto,
   ): Promise<ProjectResponseDto> {
     return this.prisma.project.update({
       where: { id },

@@ -1,13 +1,7 @@
 import { Body, Controller, Post, UseGuards, Req, Get, Query, Patch, Param, ParseIntPipe } from '@nestjs/common'
 import { Request } from 'express'
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger'
-import {
-  CreateProjectRequestDto,
-  ProjectResponseDto,
-  ProjectSummaryDto,
-  UpdateProjectRequestDto,
-  UpdateProjectStatusRequestDto,
-} from './dto'
+import { WriteProjectRequestDto, ProjectResponseDto, ProjectSummaryDto, UpdateProjectStatusRequestDto } from './dto'
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'
 import { ProjectService } from './project.service'
 import { ApiPaginatedResponse, PageRequestDto, PageResponseDto } from 'src/common/pagination'
@@ -31,7 +25,7 @@ export class ProjectController {
   @Post()
   @ApiCreatedResponse({ type: ProjectResponseDto })
   @UseGuards(JwtAuthGuard)
-  async createProject(@Body() dto: CreateProjectRequestDto, @Req() req: Request): Promise<ProjectResponseDto> {
+  async createProject(@Body() dto: WriteProjectRequestDto, @Req() req: Request): Promise<ProjectResponseDto> {
     return await this.projectService.createProject(dto, req.user.userId)
   }
 
@@ -61,7 +55,7 @@ export class ProjectController {
   @ApiOkResponse({ type: ProjectResponseDto })
   async updateProject(
     @Param('projectId', ParseIntPipe) projectId: number,
-    @Body() dto: UpdateProjectRequestDto,
+    @Body() dto: WriteProjectRequestDto,
     @Req() req: Request,
   ): Promise<ProjectResponseDto> {
     await this.projectService.checkIsCreator({ projectId, userId: req.user.userId })

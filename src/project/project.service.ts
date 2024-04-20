@@ -6,13 +6,7 @@ import {
   NotFoundException,
 } from '@nestjs/common'
 import { ProjectStatus } from '@prisma/client'
-import {
-  CreateProjectRequestDto,
-  ProjectResponseDto,
-  ProjectSummaryDto,
-  UpdateProjectRequestDto,
-  UpdateProjectStatusRequestDto,
-} from './dto'
+import { WriteProjectRequestDto, ProjectResponseDto, ProjectSummaryDto, UpdateProjectStatusRequestDto } from './dto'
 import { ProjectRepository } from './project.repository'
 import { ProjectBuilder } from './project.builder'
 import { Project } from './domain/project'
@@ -57,7 +51,7 @@ export class ProjectService {
    * 프로젝트 생성
    */
   async createProject(
-    { title, summary, description, thumbnail_url, target_amount, category_id }: CreateProjectRequestDto,
+    { title, summary, description, thumbnail_url, target_amount, category_id }: WriteProjectRequestDto,
     created_by_id: Project['created_by_id'],
   ): Promise<ProjectResponseDto> {
     const count = await this.projectRepository.getDraftProjectCount(created_by_id)
@@ -148,7 +142,7 @@ export class ProjectService {
   /**
    * 프로젝트 수정
    */
-  async updateProject(projectId: number, dto: UpdateProjectRequestDto) {
+  async updateProject(projectId: number, dto: WriteProjectRequestDto) {
     const project = await this.getProject(projectId)
 
     if (project.status !== ProjectStatus.DRAFT && project.status !== ProjectStatus.REVIEW_REJECTED) {
