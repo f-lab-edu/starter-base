@@ -45,7 +45,6 @@ export class ProjectService {
   async checkIsUpdatable({ projectId }: { projectId: number }): Promise<void> {
     const project = await this.getProject(projectId)
 
-    // TODO: domain 에서 판단하도록 변경
     if (project.status !== ProjectStatus.DRAFT && project.status !== ProjectStatus.REVIEW_REJECTED) {
       throw new BadRequestException('Only draft or review rejected projects can be updated')
     }
