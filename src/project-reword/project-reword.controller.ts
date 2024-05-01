@@ -9,14 +9,12 @@ import {
   ParseIntPipe,
   Patch,
   Post,
-  Query,
   UseGuards,
 } from '@nestjs/common'
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger'
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'
 import { ProjectRewordService } from './project-reword.service'
 import { ProjectRewordResponseDto, CreateProjectRewordRequestDto, UpdateProjectRewordRequestDto } from './dto'
-import { ApiPaginatedResponse, PageRequestDto, PageResponseDto } from '../common/pagination'
 import { ProjectService } from '../project/project.service'
 import { Roles, RolesGuard } from '../users/roles.guard'
 
@@ -45,12 +43,9 @@ export class ProjectRewordController {
    * 프로젝트 선물 리스트 조회
    */
   @Get('/project/:projectId/reword')
-  @ApiPaginatedResponse(ProjectRewordResponseDto)
-  async getRewords(
-    @Param('projectId', ParseIntPipe) projectId: number,
-    @Query() dto: PageRequestDto,
-  ): Promise<PageResponseDto<ProjectRewordResponseDto>> {
-    return await this.rewordService.getRewords(projectId, dto)
+  @ApiOkResponse({ type: ProjectRewordResponseDto, isArray: true })
+  async getRewords(@Param('projectId', ParseIntPipe) projectId: number): Promise<ProjectRewordResponseDto[]> {
+    return await this.rewordService.getRewords(projectId)
   }
 
   /**

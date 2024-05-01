@@ -24,34 +24,19 @@ export class ProjectRewordRepository {
     })
   }
 
-  async getManyWithTotal({
-    projectId,
-    skip,
-    take,
-  }: {
-    projectId: number
-    skip: number
-    take: number
-  }): Promise<[ProjectRewordResponseDto[], number]> {
-    const [items, total] = await this.prisma.$transaction([
-      this.prisma.projectReword.findMany({
-        skip,
-        take,
-        where: { project_id: projectId },
-        select: {
-          id: true,
-          title: true,
-          description: true,
-          expected_delivery_date: true,
-          amount: true,
-          limit: true,
-          project_id: true,
-        },
-      }),
-      this.prisma.projectReword.count(),
-    ])
-
-    return [items, total]
+  async getMany({ projectId }: { projectId: number }): Promise<ProjectRewordResponseDto[]> {
+    return this.prisma.projectReword.findMany({
+      where: { project_id: projectId },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        expected_delivery_date: true,
+        amount: true,
+        limit: true,
+        project_id: true,
+      },
+    })
   }
 
   async getOneById(rewordId: number): Promise<ProjectRewordResponseDto> {
