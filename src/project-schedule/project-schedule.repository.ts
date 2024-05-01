@@ -20,7 +20,7 @@ export class ProjectScheduleRepository {
       payment_settlement_date: string
     },
   ): Promise<ScheduleResponseDto> {
-    return await this.prisma.projectSchedule.create({
+    return this.prisma.projectSchedule.create({
       data: {
         funding_start_date,
         funding_due_date,
@@ -39,9 +39,9 @@ export class ProjectScheduleRepository {
     })
   }
 
-  async getSchedule({ id, project_id }: { id?: number; project_id?: number }): Promise<ScheduleResponseDto> {
-    return await this.prisma.projectSchedule.findFirst({
-      where: { id, project_id },
+  async getSchedule({ project_id }: { project_id: number }): Promise<ScheduleResponseDto> {
+    return this.prisma.projectSchedule.findFirst({
+      where: { project_id },
       select: {
         id: true,
         funding_start_date: true,

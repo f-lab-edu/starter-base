@@ -6,19 +6,14 @@ import {
   NotFoundException,
 } from '@nestjs/common'
 import { ProjectStatus } from '@prisma/client'
-import {
-  CreateProjectRequestDto,
-  ProjectResponseDto,
-  ProjectSummaryDto,
-  UpdateProjectRequestDto,
-  UpdateProjectStatusRequestDto,
-} from './dto'
+import { WriteProjectRequestDto, ProjectResponseDto, ProjectSummaryDto, UpdateProjectStatusRequestDto } from './dto'
 import { ProjectRepository } from './project.repository'
 import { ProjectBuilder } from './project.builder'
 import { Project } from './domain/project'
 import { PageRequestDto, PageResponseDto } from 'src/common/pagination'
 import { ProjectScheduleService } from 'src/project-schedule/project-schedule.service'
 import { ReviewProjectRequestDto } from './dto/review-project.request.dto'
+import { ProjectSchedule } from '../project-schedule/domain/project-schedule'
 
 @Injectable()
 export class ProjectService {
@@ -27,7 +22,10 @@ export class ProjectService {
     private readonly scheduleService: ProjectScheduleService,
   ) {}
 
-  async checkIsCreator({ projectId, userId }: { projectId: number; userId: number }): Promise<void> {
+  /**
+   * 프로젝트의 창작자인지 검사하는 함수
+   */
+  async checkIsCreator({ projectId, userId }: { projectId: number; userId: number }): Promise<boolean> {
     const project = await this.projectRepository.getCreatorId(projectId)
 
     if (!project) {
@@ -37,12 +35,30 @@ export class ProjectService {
     if (project.created_by_id !== userId) {
       throw new ForbiddenException('Only creator can be access')
     }
+
+    return true
   }
 
-  async createProjectDomain({ projectId }: { projectId: number }): Promise<Project> {
+  /**
+   * 프로젝트가 수정 가능한 상태인지 검사하는 함수
+   */
+  async checkIsUpdatable({ projectId }: { projectId: number }): Promise<void> {
+    const project = await this.getProject(projectId)
+
+    if (project.status !== ProjectStatus.DRAFT && project.status !== ProjectStatus.REVIEW_REJECTED) {
+      throw new BadRequestException('Only draft or review rejected projects can be updated')
+    }
+  }
+
+  async createProjectDomain({
+    projectId,
+    schedule,
+  }: {
+    projectId: number
+    schedule?: ProjectSchedule
+  }): Promise<Project> {
     const { id, status, title, summary, description, thumbnail_url, target_amount, created_by, category } =
       await this.getProject(projectId)
-    const schedule = await this.scheduleService.createScheduleDomain({ projectId })
 
     return new ProjectBuilder(status, id)
       .setContents(title, summary, description, thumbnail_url)
@@ -57,7 +73,7 @@ export class ProjectService {
    * 프로젝트 생성
    */
   async createProject(
-    { title, summary, description, thumbnail_url, target_amount, category_id }: CreateProjectRequestDto,
+    { title, summary, description, thumbnail_url, target_amount, category_id }: WriteProjectRequestDto,
     created_by_id: Project['created_by_id'],
   ): Promise<ProjectResponseDto> {
     const count = await this.projectRepository.getDraftProjectCount(created_by_id)
@@ -119,7 +135,8 @@ export class ProjectService {
    * 프로젝트 상태 변경
    */
   async updateProjectStatus({ projectId, status }: { projectId: number } & UpdateProjectStatusRequestDto) {
-    const project = await this.createProjectDomain({ projectId })
+    const schedule = await this.scheduleService.createScheduleDomain({ projectId })
+    const project = await this.createProjectDomain({ projectId, schedule })
 
     switch (status) {
       case ProjectStatus.REVIEW_PENDING: {
@@ -148,13 +165,7 @@ export class ProjectService {
   /**
    * 프로젝트 수정
    */
-  async updateProject(projectId: number, dto: UpdateProjectRequestDto) {
-    const project = await this.getProject(projectId)
-
-    if (project.status !== ProjectStatus.DRAFT && project.status !== ProjectStatus.REVIEW_REJECTED) {
-      throw new BadRequestException('Only draft or review rejected projects can be updated')
-    }
-
+  async updateProject(projectId: number, dto: WriteProjectRequestDto) {
     return await this.projectRepository.update(projectId, dto)
   }
 

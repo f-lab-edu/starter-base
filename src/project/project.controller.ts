@@ -1,19 +1,13 @@
 import { Body, Controller, Post, UseGuards, Req, Get, Query, Patch, Param, ParseIntPipe } from '@nestjs/common'
 import { Request } from 'express'
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger'
-import {
-  CreateProjectRequestDto,
-  ProjectResponseDto,
-  ProjectSummaryDto,
-  UpdateProjectRequestDto,
-  UpdateProjectStatusRequestDto,
-} from './dto'
+import { WriteProjectRequestDto, ProjectResponseDto, ProjectSummaryDto, UpdateProjectStatusRequestDto } from './dto'
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'
 import { ProjectService } from './project.service'
 import { ApiPaginatedResponse, PageRequestDto, PageResponseDto } from 'src/common/pagination'
 import { ProjectCategoryService } from 'src/project-category/project-category.service'
-import { RolesGuard } from '../users/roles.guard'
 import { ReviewProjectRequestDto } from './dto/review-project.request.dto'
+import { Roles, RolesGuard } from '../users/roles.guard'
 
 // TODO: 창작자만 write 가능
 
@@ -31,7 +25,7 @@ export class ProjectController {
   @Post()
   @ApiCreatedResponse({ type: ProjectResponseDto })
   @UseGuards(JwtAuthGuard)
-  async createProject(@Body() dto: CreateProjectRequestDto, @Req() req: Request): Promise<ProjectResponseDto> {
+  async createProject(@Body() dto: WriteProjectRequestDto, @Req() req: Request): Promise<ProjectResponseDto> {
     return await this.projectService.createProject(dto, req.user.userId)
   }
 
@@ -57,14 +51,14 @@ export class ProjectController {
    * 프로젝트 수정
    */
   @Patch(':projectId')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(['CREATOR'])
   @ApiOkResponse({ type: ProjectResponseDto })
   async updateProject(
     @Param('projectId', ParseIntPipe) projectId: number,
-    @Body() dto: UpdateProjectRequestDto,
-    @Req() req: Request,
+    @Body() dto: WriteProjectRequestDto,
   ): Promise<ProjectResponseDto> {
-    await this.projectService.checkIsCreator({ projectId, userId: req.user.userId })
+    await this.projectService.checkIsUpdatable({ projectId })
 
     if (typeof dto.category_id === 'number') {
       const category = await this.categoryService.getCategory(dto.category_id)
@@ -78,15 +72,13 @@ export class ProjectController {
    * 프로젝트 상태 변경
    */
   @Patch(':projectId/status')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(['CREATOR'])
   @ApiOkResponse({ type: ProjectResponseDto })
   async updateProjectStatus(
     @Param('projectId', ParseIntPipe) projectId: number,
     @Query() { status }: UpdateProjectStatusRequestDto,
-    @Req() req: Request,
   ): Promise<ProjectResponseDto> {
-    await this.projectService.checkIsCreator({ projectId, userId: req.user.userId })
-
     return await this.projectService.updateProjectStatus({ projectId, status })
   }
 
@@ -94,7 +86,8 @@ export class ProjectController {
    * 프로젝트 심사(승인 또는 거절)
    */
   @Patch(':projectId/review')
-  @UseGuards(JwtAuthGuard, RolesGuard('ADMIN'))
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(['ADMIN'])
   @ApiOkResponse({ type: ProjectResponseDto })
   async reviewProject(
     @Param('projectId', ParseIntPipe) projectId: number,

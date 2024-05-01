@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger'
 import { Transform, Type } from 'class-transformer'
 import { IsNumber, IsOptional, IsString } from 'class-validator'
 
-export class CreateProjectRequestDto {
+export class WriteProjectRequestDto {
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()

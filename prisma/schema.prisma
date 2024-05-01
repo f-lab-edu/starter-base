@@ -40,7 +40,7 @@ model User {
 /// 프로젝트 카테고리
 model ProjectCategory {
   id   Int    @id @default(autoincrement())
-  name String @db.VarChar(12)
+  name String @unique @db.VarChar(12)
 
   project Project[]
 
@@ -102,7 +102,7 @@ model ProjectSchedule {
   updated_at              DateTime @updatedAt
 
   project    Project @relation(fields: [project_id], references: [id]) /// 프로젝트
-  project_id Int
+  project_id Int     @unique
 
   @@map(name: "project_schedule")
 }
@@ -114,7 +114,7 @@ model ProjectReword {
   title                  String   @db.VarChar(50) /// 제목
   description            String   @db.VarChar(200) /// 설명
   amount                 Int /// 금액
-  limit                  Int /// 후원 가능 수량
+  limit                  Int? /// 후원 가능 수량
   expected_delivery_date DateTime /// 예상 수령가능 날짜
   created_at             DateTime @default(now())
   updated_at             DateTime @updatedAt
