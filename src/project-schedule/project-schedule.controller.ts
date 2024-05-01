@@ -42,15 +42,6 @@ export class ProjectScheduleController {
   }
 
   /**
-   * 프로젝트 스케줄 단일 조회
-   */
-  @Get('/project/schedule/:scheduleId')
-  @ApiOkResponse({ type: ScheduleResponseDto })
-  async getScheduleByScheduleId(@Param('scheduleId', ParseIntPipe) scheduleId: number): Promise<ScheduleResponseDto> {
-    return await this.scheduleService.getSchedule({ id: scheduleId })
-  }
-
-  /**
    * 프로젝트 스케줄 수정
    */
   @Patch('/project/:projectId/schedule/:scheduleId')

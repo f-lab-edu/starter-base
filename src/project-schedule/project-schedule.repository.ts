@@ -39,9 +39,9 @@ export class ProjectScheduleRepository {
     })
   }
 
-  async getSchedule({ id, project_id }: { id?: number; project_id?: number }): Promise<ScheduleResponseDto> {
+  async getSchedule({ project_id }: { project_id: number }): Promise<ScheduleResponseDto> {
     return this.prisma.projectSchedule.findFirst({
-      where: { id, project_id },
+      where: { project_id },
       select: {
         id: true,
         funding_start_date: true,
