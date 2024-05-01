@@ -4,7 +4,7 @@ import { UserRole } from '@prisma/client'
 import { JwtDto } from '../auth/dto'
 import { ProjectService } from '../project/project.service'
 
-const ROLES_KEY = 'roles' as const
+const ROLES_KEY = 'roles'
 export const Roles = (roles: (UserRole | 'CREATOR')[]) => SetMetadata(ROLES_KEY, roles)
 
 @Injectable()
