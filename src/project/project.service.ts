@@ -13,6 +13,7 @@ import { Project } from './domain/project'
 import { PageRequestDto, PageResponseDto } from 'src/common/pagination'
 import { ProjectScheduleService } from 'src/project-schedule/project-schedule.service'
 import { ReviewProjectRequestDto } from './dto/review-project.request.dto'
+import { ProjectSchedule } from '../project-schedule/domain/project-schedule'
 
 @Injectable()
 export class ProjectService {
@@ -24,7 +25,7 @@ export class ProjectService {
   /**
    * 프로젝트의 창작자인지 검사하는 함수
    */
-  async checkIsCreator({ projectId, userId }: { projectId: number; userId: number }): Promise<void> {
+  async checkIsCreator({ projectId, userId }: { projectId: number; userId: number }): Promise<boolean> {
     const project = await this.projectRepository.getCreatorId(projectId)
 
     if (!project) {
@@ -34,6 +35,8 @@ export class ProjectService {
     if (project.created_by_id !== userId) {
       throw new ForbiddenException('Only creator can be access')
     }
+
+    return true
   }
 
   /**
@@ -42,15 +45,21 @@ export class ProjectService {
   async checkIsUpdatable({ projectId }: { projectId: number }): Promise<void> {
     const project = await this.getProject(projectId)
 
+    // TODO: domain 에서 판단하도록 변경
     if (project.status !== ProjectStatus.DRAFT && project.status !== ProjectStatus.REVIEW_REJECTED) {
       throw new BadRequestException('Only draft or review rejected projects can be updated')
     }
   }
 
-  async createProjectDomain({ projectId }: { projectId: number }): Promise<Project> {
+  async createProjectDomain({
+    projectId,
+    schedule,
+  }: {
+    projectId: number
+    schedule?: ProjectSchedule
+  }): Promise<Project> {
     const { id, status, title, summary, description, thumbnail_url, target_amount, created_by, category } =
       await this.getProject(projectId)
-    const schedule = await this.scheduleService.createScheduleDomain({ projectId })
 
     return new ProjectBuilder(status, id)
       .setContents(title, summary, description, thumbnail_url)
@@ -127,7 +136,8 @@ export class ProjectService {
    * 프로젝트 상태 변경
    */
   async updateProjectStatus({ projectId, status }: { projectId: number } & UpdateProjectStatusRequestDto) {
-    const project = await this.createProjectDomain({ projectId })
+    const schedule = await this.scheduleService.createScheduleDomain({ projectId })
+    const project = await this.createProjectDomain({ projectId, schedule })
 
     switch (status) {
       case ProjectStatus.REVIEW_PENDING: {

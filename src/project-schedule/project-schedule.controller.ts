@@ -1,7 +1,9 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post } from '@nestjs/common'
+import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, UseGuards } from '@nestjs/common'
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger'
 import { ProjectScheduleService } from './project-schedule.service'
 import { CreateScheduleRequestDto, ScheduleResponseDto } from './dto'
+import { Roles, RolesGuard } from '../users/roles.guard'
+import { JwtAuthGuard } from '../auth/jwt-auth.guard'
 
 // TODO: 창작자만 write 가능
 
@@ -14,6 +16,8 @@ export class ProjectScheduleController {
    * 프로젝트 스케줄 생성
    */
   @Post('/project/:projectId/schedule')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(['CREATOR'])
   @ApiCreatedResponse({ type: ScheduleResponseDto })
   async createSchedule(
     @Param('projectId', ParseIntPipe) projectId: number,
@@ -43,6 +47,8 @@ export class ProjectScheduleController {
   /**
    * 프로젝트 스케줄 수정
    */
-  @Patch('/project/schedule/:scheduleId')
+  @Patch('/project/:projectId/schedule/:scheduleId')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(['CREATOR'])
   async updateSchedule() {}
 }
