@@ -4,13 +4,17 @@ import { ProjectScheduleService } from './project-schedule.service'
 import { CreateScheduleRequestDto, ScheduleResponseDto } from './dto'
 import { Roles, RolesGuard } from '../users/roles.guard'
 import { JwtAuthGuard } from '../auth/jwt-auth.guard'
+import { ProjectService } from '../project/project.service'
 
 // TODO: 창작자만 write 가능
 
 @ApiTags('project-schedule')
 @Controller()
 export class ProjectScheduleController {
-  constructor(private readonly scheduleService: ProjectScheduleService) {}
+  constructor(
+    private readonly scheduleService: ProjectScheduleService,
+    private readonly projectService: ProjectService,
+  ) {}
 
   /**
    * 프로젝트 스케줄 생성
@@ -23,6 +27,8 @@ export class ProjectScheduleController {
     @Param('projectId', ParseIntPipe) projectId: number,
     @Body() dto: CreateScheduleRequestDto,
   ): Promise<ScheduleResponseDto> {
+    await this.projectService.checkIsUpdatable({ projectId })
+
     return await this.scheduleService.createSchedule(projectId, dto)
   }
 

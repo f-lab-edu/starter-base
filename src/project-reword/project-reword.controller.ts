@@ -36,6 +36,8 @@ export class ProjectRewordController {
     @Param('projectId', ParseIntPipe) projectId: number,
     @Body() dto: CreateProjectRewordRequestDto,
   ): Promise<ProjectRewordResponseDto> {
+    await this.projectService.checkIsUpdatable({ projectId })
+
     return this.rewordService.createReword(projectId, dto)
   }
 
@@ -70,7 +72,7 @@ export class ProjectRewordController {
       throw new BadRequestException('The project id in reword and the project id parameter do not match.')
     }
 
-    await this.projectService.checkIsUpdatable({ projectId: reword.project_id })
+    await this.projectService.checkIsUpdatable({ projectId })
 
     return await this.rewordService.updateReword(rewordId, dto)
   }
@@ -96,7 +98,7 @@ export class ProjectRewordController {
       throw new BadRequestException('The project id in reword and the project id parameter do not match.')
     }
 
-    await this.projectService.checkIsUpdatable({ projectId: reword.project_id })
+    await this.projectService.checkIsUpdatable({ projectId })
 
     await this.rewordService.deleteReword(rewordId)
   }
