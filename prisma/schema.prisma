@@ -102,7 +102,7 @@ model ProjectSchedule {
   updated_at              DateTime @updatedAt
 
   project    Project @relation(fields: [project_id], references: [id]) /// 프로젝트
-  project_id Int
+  project_id Int     @unique
 
   @@map(name: "project_schedule")
 }
