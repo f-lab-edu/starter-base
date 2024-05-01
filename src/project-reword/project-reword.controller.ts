@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -9,16 +10,15 @@ import {
   Patch,
   Post,
   Query,
-  Req,
   UseGuards,
 } from '@nestjs/common'
-import { Request } from 'express'
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger'
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'
 import { ProjectRewordService } from './project-reword.service'
 import { ProjectRewordResponseDto, CreateProjectRewordRequestDto, UpdateProjectRewordRequestDto } from './dto'
 import { ApiPaginatedResponse, PageRequestDto, PageResponseDto } from '../common/pagination'
 import { ProjectService } from '../project/project.service'
+import { Roles, RolesGuard } from '../users/roles.guard'
 
 // TODO: 창작자만 write 가능
 
@@ -32,14 +32,12 @@ export class ProjectRewordController {
    */
   @Post('/project/:projectId/reword')
   @ApiCreatedResponse({ type: ProjectRewordResponseDto })
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(['CREATOR'])
   async createReword(
     @Param('projectId', ParseIntPipe) projectId: number,
     @Body() dto: CreateProjectRewordRequestDto,
-    @Req() req: Request,
   ): Promise<ProjectRewordResponseDto> {
-    await this.projectService.checkIsCreator({ projectId, userId: req.user.userId })
-
     return this.rewordService.createReword(projectId, dto)
   }
 
@@ -58,13 +56,14 @@ export class ProjectRewordController {
   /**
    * 프로젝트 선물 수정
    */
-  @Patch('/project/reword/:rewordId')
+  @Patch('/project/:projectId/reword/:rewordId')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(['CREATOR'])
   @ApiOkResponse({ type: ProjectRewordResponseDto })
-  @UseGuards(JwtAuthGuard)
   async updateReword(
+    @Param('projectId', ParseIntPipe) projectId: number,
     @Param('rewordId', ParseIntPipe) rewordId: number,
     @Body() dto: UpdateProjectRewordRequestDto,
-    @Req() req: Request,
   ): Promise<ProjectRewordResponseDto> {
     const reword = await this.rewordService.getRewordById(rewordId)
 
@@ -72,7 +71,10 @@ export class ProjectRewordController {
       throw new NotFoundException('Not found project reword')
     }
 
-    await this.projectService.checkIsCreator({ projectId: reword.project_id, userId: req.user.userId })
+    if (reword.project_id !== projectId) {
+      throw new BadRequestException('The project id in reword and the project id parameter do not match.')
+    }
+
     await this.projectService.checkIsUpdatable({ projectId: reword.project_id })
 
     return await this.rewordService.updateReword(rewordId, dto)
@@ -81,17 +83,24 @@ export class ProjectRewordController {
   /**
    * 프로젝트 선물 삭제
    */
-  @Delete('/project/reword/:rewordId')
+  @Delete('/project/:projectId/reword/:rewordId')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(['CREATOR'])
   @ApiOkResponse()
-  @UseGuards(JwtAuthGuard)
-  async deleteReword(@Param('rewordId', ParseIntPipe) rewordId: number, @Req() req: Request): Promise<void> {
+  async deleteReword(
+    @Param('projectId', ParseIntPipe) projectId: number,
+    @Param('rewordId', ParseIntPipe) rewordId: number,
+  ): Promise<void> {
     const reword = await this.rewordService.getRewordById(rewordId)
 
     if (!reword) {
       throw new NotFoundException('Not found project reword')
     }
 
-    await this.projectService.checkIsCreator({ projectId: reword.project_id, userId: req.user.userId })
+    if (reword.project_id !== projectId) {
+      throw new BadRequestException('The project id in reword and the project id parameter do not match.')
+    }
+
     await this.projectService.checkIsUpdatable({ projectId: reword.project_id })
 
     await this.rewordService.deleteReword(rewordId)
