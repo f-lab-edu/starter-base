@@ -6,8 +6,8 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'
 import { ProjectService } from './project.service'
 import { ApiPaginatedResponse, PageRequestDto, PageResponseDto } from 'src/common/pagination'
 import { ProjectCategoryService } from 'src/project-category/project-category.service'
-import { RolesGuard } from '../users/roles.guard'
 import { ReviewProjectRequestDto } from './dto/review-project.request.dto'
+import { Roles, RolesGuard } from '../users/roles.guard'
 
 // TODO: 창작자만 write 가능
 
@@ -51,14 +51,13 @@ export class ProjectController {
    * 프로젝트 수정
    */
   @Patch(':projectId')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(['CREATOR'])
   @ApiOkResponse({ type: ProjectResponseDto })
   async updateProject(
     @Param('projectId', ParseIntPipe) projectId: number,
     @Body() dto: WriteProjectRequestDto,
-    @Req() req: Request,
   ): Promise<ProjectResponseDto> {
-    await this.projectService.checkIsCreator({ projectId, userId: req.user.userId })
     await this.projectService.checkIsUpdatable({ projectId })
 
     if (typeof dto.category_id === 'number') {
@@ -73,15 +72,13 @@ export class ProjectController {
    * 프로젝트 상태 변경
    */
   @Patch(':projectId/status')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(['CREATOR'])
   @ApiOkResponse({ type: ProjectResponseDto })
   async updateProjectStatus(
     @Param('projectId', ParseIntPipe) projectId: number,
     @Query() { status }: UpdateProjectStatusRequestDto,
-    @Req() req: Request,
   ): Promise<ProjectResponseDto> {
-    await this.projectService.checkIsCreator({ projectId, userId: req.user.userId })
-
     return await this.projectService.updateProjectStatus({ projectId, status })
   }
 
@@ -89,7 +86,8 @@ export class ProjectController {
    * 프로젝트 심사(승인 또는 거절)
    */
   @Patch(':projectId/review')
-  @UseGuards(JwtAuthGuard, RolesGuard('ADMIN'))
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(['ADMIN'])
   @ApiOkResponse({ type: ProjectResponseDto })
   async reviewProject(
     @Param('projectId', ParseIntPipe) projectId: number,
