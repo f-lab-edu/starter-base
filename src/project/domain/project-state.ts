@@ -17,6 +17,12 @@ export abstract class ProjectState {
     return true
   }
 
+  /** 프로젝트 심사 대기로 전환 가능한 상태인지 체크 */
   abstract isValidToReviewPending(): boolean
+
+  /** 프로젝트 심사 가능한 상태인지 체크 */
   abstract isValidToReview(): boolean
+
+  /** 후원 가능한 상태인지 체크 */
+  abstract isSponsorable(): boolean
 }

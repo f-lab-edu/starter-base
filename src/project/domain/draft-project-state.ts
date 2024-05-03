@@ -23,4 +23,8 @@ export class DraftProjectState extends ProjectState {
   isValidToReview(): boolean {
     throw new Error('Not supported method')
   }
+
+  public isSponsorable(): boolean {
+    return false
+  }
 }

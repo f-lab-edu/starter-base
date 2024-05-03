@@ -11,8 +11,8 @@ export class ProjectRewordService {
     return await this.rewordRepository.create(projectId, dto)
   }
 
-  async getRewords(projectId: number): Promise<ProjectRewordResponseDto[]> {
-    return await this.rewordRepository.getMany({ projectId })
+  async getRewords(projectId: number, ids?: number[]): Promise<ProjectRewordResponseDto[]> {
+    return await this.rewordRepository.getMany({ projectId, ids })
   }
 
   async getRewordById(rewordId: number): Promise<ProjectRewordResponseDto> {

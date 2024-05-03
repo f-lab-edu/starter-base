@@ -24,9 +24,9 @@ export class ProjectRewordRepository {
     })
   }
 
-  async getMany({ projectId }: { projectId: number }): Promise<ProjectRewordResponseDto[]> {
+  async getMany({ projectId, ids }: { projectId: number; ids?: number[] }): Promise<ProjectRewordResponseDto[]> {
     return this.prisma.projectReword.findMany({
-      where: { project_id: projectId },
+      where: { project_id: projectId, id: { in: ids } },
       select: {
         id: true,
         title: true,
