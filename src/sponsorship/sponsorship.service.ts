@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
 import { ProjectRewordService } from '../project-reword/project-reword.service'
-import { CreateSponsorshipRequestDto, CreateSponsorshipResponseDto } from './dto'
+import { CreateSponsorshipRequestDto, CreateSponsorshipResponseDto, SponsorshipResponseDto } from './dto'
 import { SponsorshipRepository } from './sponsorship.repository'
 import { ProjectService } from '../project/project.service'
 
@@ -64,8 +64,12 @@ export class SponsorshipService {
       sponsorship_id: id,
       project_id: projectId,
       user_id: userId,
-      amount: projectRewords.reduce((total, reword) => total + reword.amount, 0),
+      amount,
       created_at,
     }
+  }
+
+  async getSponsorshipById(sponsorshipId: number): Promise<SponsorshipResponseDto> {
+    return this.sponsorshipRepository.getSponsorshipById(sponsorshipId)
   }
 }

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from '../prisma/prisma.service'
-import { CreateSponsorshipRequestDto } from './dto'
+import { CreateSponsorshipRequestDto, SponsorshipResponseDto } from './dto'
 
 @Injectable()
 export class SponsorshipRepository {
@@ -62,6 +62,37 @@ export class SponsorshipRepository {
       const count = counts.reduce((acc, curr) => acc + curr.count, 0)
 
       return limit - count
+    })
+  }
+
+  /** 후원 정보 조회 */
+  async getSponsorshipById(id: number): Promise<SponsorshipResponseDto> {
+    return this.prisma.sponsorship.findUnique({
+      where: { id },
+      select: {
+        created_at: true,
+        sponsorship_reword: {
+          select: {
+            id: true,
+            count: true,
+            reword: {
+              select: { id: true, title: true, description: true, amount: true, expected_delivery_date: true },
+            },
+          },
+        },
+        project: {
+          select: {
+            id: true,
+            status: true,
+            title: true,
+            target_amount: true,
+            collected_amount: true,
+            category: { select: { name: true } },
+            created_by: { select: { nickname: true } },
+            project_schedule: { select: { funding_due_date: true } },
+          },
+        },
+      },
     })
   }
 }

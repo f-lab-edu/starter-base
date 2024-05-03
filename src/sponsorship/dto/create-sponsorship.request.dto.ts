@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger'
 import { ArrayMinSize, IsArray, IsNumber, Min, ValidateNested } from 'class-validator'
 import { Type } from 'class-transformer'
 
-class SponsorshipReword {
+class CreateSponsorshipReword {
   @ApiProperty()
   @IsNumber()
   @Type(() => Number)
@@ -16,10 +16,10 @@ class SponsorshipReword {
 }
 
 export class CreateSponsorshipRequestDto {
-  @ApiProperty({ isArray: true, type: SponsorshipReword })
+  @ApiProperty({ isArray: true, type: CreateSponsorshipReword })
   @IsArray()
   @ArrayMinSize(1)
   @ValidateNested({ each: true })
-  @Type(() => SponsorshipReword)
-  rewords: SponsorshipReword[]
+  @Type(() => CreateSponsorshipReword)
+  rewords: CreateSponsorshipReword[]
 }

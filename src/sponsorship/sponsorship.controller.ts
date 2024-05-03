@@ -1,8 +1,8 @@
-import { Body, Controller, Param, ParseIntPipe, Post, Req, UseGuards } from '@nestjs/common'
+import { Body, Controller, Get, Param, ParseIntPipe, Post, Req, UseGuards } from '@nestjs/common'
 import { JwtAuthGuard } from '../auth/jwt-auth.guard'
 import { SponsorshipService } from './sponsorship.service'
-import { ApiCreatedResponse, ApiTags } from '@nestjs/swagger'
-import { CreateSponsorshipRequestDto, CreateSponsorshipResponseDto } from './dto'
+import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger'
+import { CreateSponsorshipRequestDto, CreateSponsorshipResponseDto, SponsorshipResponseDto } from './dto'
 import { Request } from 'express'
 
 @ApiTags('sponsorship')
@@ -22,5 +22,15 @@ export class SponsorshipController {
     @Req() req: Request,
   ): Promise<CreateSponsorshipResponseDto> {
     return await this.sponsorshipService.createSponsorship(projectId, dto, req.user.userId)
+  }
+
+  /**
+   * 후원 상세 조회
+   */
+  @Get('/sponsorship/:sponsorshipId')
+  @UseGuards(JwtAuthGuard)
+  @ApiOkResponse({ type: SponsorshipResponseDto })
+  async getSponsorship(@Param('sponsorshipId', ParseIntPipe) sponsorshipId: number): Promise<SponsorshipResponseDto> {
+    return await this.sponsorshipService.getSponsorshipById(sponsorshipId)
   }
 }
