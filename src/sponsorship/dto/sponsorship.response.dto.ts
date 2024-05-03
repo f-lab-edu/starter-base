@@ -1,22 +1,22 @@
 import { ProjectStatus } from '@prisma/client'
 import { ApiProperty } from '@nestjs/swagger'
 
-class Category {
+class CategoryInReadSponsorship {
   @ApiProperty()
   name: string
 }
 
-class CreatedByUser {
+class CreatedByUserInReadSponsorship {
   @ApiProperty()
   nickname: string
 }
 
-class ProjectSchedule {
+class ProjectScheduleInReadSponsorship {
   @ApiProperty()
   funding_due_date: Date
 }
 
-class ProjectReword {
+class ProjectRewordInReadSponsorship {
   @ApiProperty()
   id: number
 
@@ -33,18 +33,18 @@ class ProjectReword {
   expected_delivery_date: Date
 }
 
-class SponsorshipReword {
+class SponsorshipRewordInReadSponsorship {
   @ApiProperty()
   id: number
 
   @ApiProperty()
   count: number
 
-  @ApiProperty({ type: ProjectReword })
-  reword: ProjectReword
+  @ApiProperty({ type: ProjectRewordInReadSponsorship })
+  reword: ProjectRewordInReadSponsorship
 }
 
-class Project {
+class ProjectInReadSponsorship {
   @ApiProperty()
   id: number
 
@@ -60,23 +60,23 @@ class Project {
   @ApiProperty()
   collected_amount: bigint
 
-  @ApiProperty({ type: Category })
-  category: Category
+  @ApiProperty({ type: CategoryInReadSponsorship })
+  category: CategoryInReadSponsorship
 
-  @ApiProperty({ type: CreatedByUser })
-  created_by: CreatedByUser
+  @ApiProperty({ type: CreatedByUserInReadSponsorship })
+  created_by: CreatedByUserInReadSponsorship
 
-  @ApiProperty({ isArray: true, type: ProjectSchedule })
-  project_schedule: ProjectSchedule[]
+  @ApiProperty({ isArray: true, type: ProjectScheduleInReadSponsorship })
+  project_schedule: ProjectScheduleInReadSponsorship[]
 }
 
 export class SponsorshipResponseDto {
   @ApiProperty()
   created_at: Date
 
-  @ApiProperty({ isArray: true, type: SponsorshipReword })
-  sponsorship_reword: SponsorshipReword[]
+  @ApiProperty({ isArray: true, type: SponsorshipRewordInReadSponsorship })
+  sponsorship_reword: SponsorshipRewordInReadSponsorship[]
 
-  @ApiProperty({ type: Project })
-  project: Project
+  @ApiProperty({ type: ProjectInReadSponsorship })
+  project: ProjectInReadSponsorship
 }
