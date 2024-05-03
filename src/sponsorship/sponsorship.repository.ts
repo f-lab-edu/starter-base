@@ -26,6 +26,21 @@ export class SponsorshipRepository {
           sponsorship_id: sponsorship.id,
         })),
       })
+
+      const projectRewords = await tx.projectReword.findMany({
+        where: { id: { in: sponsorshipRewords.map(({ project_reword_id }) => project_reword_id) } },
+        select: { id: true, amount: true },
+      })
+      const amount = projectRewords
+        .map(({ id, amount }) => amount * sponsorshipRewords.find((r) => r.project_reword_id === id).count)
+        .reduce((acc, curr) => acc + curr, 0)
+
+      // 프로젝트 모인 금액(collected_amount) 업데이트
+      await tx.project.update({
+        where: { id: projectId },
+        data: { collected_amount: { increment: amount } },
+      })
+
       return sponsorship
     })
   }
