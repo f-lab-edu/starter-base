@@ -11,6 +11,7 @@ import { LoggerMiddleware } from './common/logger'
 import { configuration } from './common/config/env'
 import { ProjectRewordModule } from './project-reword/project-reword.module'
 import { ProjectScheduleModule } from './project-schedule/project-schedule.module'
+import { SponsorshipModule } from './sponsorship/sponsorship.module'
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { ProjectScheduleModule } from './project-schedule/project-schedule.modul
     ProjectModule,
     ProjectRewordModule,
     ProjectScheduleModule,
+    SponsorshipModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -23,4 +23,8 @@ export class ReviewPendingProjectState extends ProjectState {
 
     return true
   }
+
+  public isSponsorable(): boolean {
+    return false
+  }
 }
