@@ -55,7 +55,11 @@ export class SponsorshipService {
 
     // 후원 데이터 등록
     const { id, created_at } = await this.sponsorshipRepository.create(projectId, sponsorshipRewords, userId)
-
+    const amount = projectRewords.reduce(
+      (total, reword) =>
+        total + reword.amount * sponsorshipRewords.find((r) => r.project_reword_id === reword.id).count,
+      0,
+    )
     return {
       sponsorship_id: id,
       project_id: projectId,
